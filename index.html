@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dossiers marchés publics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<style>
+/* Gestion des crédits et dossiers : menu latéral, exercice choisi discrètement en haut, crédits encodés à part et liés aux dossiers. */
+
+/* Tableau de bord administratif : menu latéral sombre, barre de titre, rangée d'indicateurs, cartes à en-tête, graphiques interactifs. */
+:root {
+  --paper: #f2f5f2;
+  --surface: #ffffff;
+  --surface-2: #f7faf7;
+  --ink: #15261d;
+  --heading: #0e3524;
+  --muted: #5b6f63;
+  --line: #dde6df;
+  --side: #0f3324;
+  --side-ink: #d7e9dc;
+  --side-hi: #1b4a35;
+  --pine: #1d6b47;
+  --fern: #3f9a62;
+  --sage: #b9d9c2;
+  --mint: #e6f2e8;
+  --lime: #c6e27c;
+  --danger: #b23a2a;
+  --warn: #a06c00;
+  --font: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace;
+  --shadow-sm: 0 1px 2px rgba(15, 40, 28, .06), 0 1px 1px rgba(15, 40, 28, .04);
+  --shadow: 0 16px 48px rgba(10, 35, 22, .22);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0c1511; --surface: #13201a; --surface-2: #172720; --ink: #e1eee5; --heading: #f0f8f2; --muted: #93ad9d; --line: #253a2f;
+    --side: #08130e; --side-ink: #cfe3d5; --side-hi: #173226; --pine: #5cc085; --fern: #4aa66d; --sage: #2c5440; --mint: #183328; --lime: #c6e27c;
+    --danger: #ef8b79; --warn: #e3b85a; --shadow-sm: none; --shadow: 0 16px 48px rgba(0,0,0,.55); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0c1511; --surface: #13201a; --surface-2: #172720; --ink: #e1eee5; --heading: #f0f8f2; --muted: #93ad9d; --line: #253a2f;
+  --side: #08130e; --side-ink: #cfe3d5; --side-hi: #173226; --pine: #5cc085; --fern: #4aa66d; --sage: #2c5440; --mint: #183328; --lime: #c6e27c;
+  --danger: #ef8b79; --warn: #e3b85a; --shadow-sm: none; --shadow: 0 16px 48px rgba(0,0,0,.55); color-scheme: dark;
+}
+/* Thèmes personnels (déclarés après : ils l'emportent) */
+:root[data-skin="foret"] { --paper:#f2f5f2; --surface:#fff; --surface-2:#f7faf7; --ink:#15261d; --heading:#0e3524; --muted:#5b6f63; --line:#dde6df; --side:#0f3324; --side-ink:#d7e9dc; --side-hi:#1b4a35; --pine:#1d6b47; --fern:#3f9a62; --sage:#b9d9c2; --mint:#e6f2e8; --lime:#c6e27c; --danger:#b23a2a; --warn:#a06c00; color-scheme: light; }
+:root[data-skin="menthe"] { --paper:#f1f8f5; --surface:#fff; --surface-2:#f6fbf9; --ink:#173a2e; --heading:#11513b; --muted:#5a7c70; --line:#d4ebe0; --side:#1d6e52; --side-ink:#e6f7ef; --side-hi:#26845f; --pine:#1b8a60; --fern:#4cb886; --sage:#b4e2cc; --mint:#e1f5eb; --lime:#f0f8c4; --danger:#b23a2a; --warn:#946400; color-scheme: light; }
+:root[data-skin="olive"] { --paper:#f5f5ee; --surface:#fff; --surface-2:#fafaf4; --ink:#2a2d17; --heading:#3a4418; --muted:#6c6f4c; --line:#e3e3cf; --side:#323b16; --side-ink:#eef0d9; --side-hi:#45511f; --pine:#5c6e22; --fern:#879b3a; --sage:#d3daa6; --mint:#eef1da; --lime:#e8c96b; --danger:#a8402c; --warn:#8f5e00; color-scheme: light; }
+:root[data-skin="nuit"] { --paper:#0c1511; --surface:#13201a; --surface-2:#172720; --ink:#e1eee5; --heading:#f0f8f2; --muted:#93ad9d; --line:#253a2f; --side:#08130e; --side-ink:#cfe3d5; --side-hi:#173226; --pine:#5cc085; --fern:#4aa66d; --sage:#2c5440; --mint:#183328; --lime:#c6e27c; --danger:#ef8b79; --warn:#e3b85a; --shadow-sm:none; color-scheme: dark; }
+:root[data-skin="ocean"] { --paper:#f1f5f8; --surface:#fff; --surface-2:#f7fafc; --ink:#142433; --heading:#0f2f4a; --muted:#566a7c; --line:#d8e2ea; --side:#0f2f4a; --side-ink:#dcebf6; --side-hi:#1a4467; --pine:#1f5f8f; --fern:#3c8cc2; --sage:#b8d3e7; --mint:#e4eff7; --lime:#8fd3e8; --danger:#b23a2a; --warn:#946400; color-scheme: light; }
+:root[data-skin="bordeaux"] { --paper:#f8f3f3; --surface:#fff; --surface-2:#fcf8f8; --ink:#2e1619; --heading:#4a1520; --muted:#7a5a5e; --line:#ecdcde; --side:#4a1520; --side-ink:#f6e3e6; --side-hi:#62202d; --pine:#8a2a3b; --fern:#b5505f; --sage:#e6c3c8; --mint:#f6e8ea; --lime:#f0c987; --danger:#b23a2a; --warn:#8f5e00; color-scheme: light; }
+:root[data-skin="ardoise"] { --paper:#f3f4f5; --surface:#fff; --surface-2:#f8f9fa; --ink:#1d2328; --heading:#20272d; --muted:#5f6a73; --line:#dde1e5; --side:#232a30; --side-ink:#e3e8ec; --side-hi:#343e46; --pine:#3f6b5a; --fern:#6c8a7e; --sage:#c4d2cc; --mint:#ebf0ee; --lime:#d8e0a0; --danger:#b23a2a; --warn:#8f5e00; color-scheme: light; }
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body { background: var(--paper); color: var(--ink); font: 14.5px/1.5 var(--font); -webkit-font-smoothing: antialiased; }
+button, input, select, textarea { font: inherit; color: inherit; }
+[hidden] { display: none !important; }
+.tn { font-variant-numeric: tabular-nums; }
+
+
+/* Structure */
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body { background: var(--paper); color: var(--ink); font: 14.5px/1.5 var(--font); -webkit-font-smoothing: antialiased; }
+button, input, select, textarea { font: inherit; color: inherit; }
+[hidden] { display: none !important; }
+.tn { font-variant-numeric: tabular-nums; }
+
+.app { display: grid; grid-template-columns: 236px minmax(0, 1fr); min-height: 100%; }
+.side { background: var(--side); color: var(--side-ink); display: flex; flex-direction: column; gap: 18px; padding: 20px 14px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+.brand { all: unset; cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 4px 8px 12px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.brand .mark { width: 34px; height: 34px; border-radius: 8px; background: var(--lime); color: var(--side); display: grid; place-items: center; font-weight: 700; font-size: 14px; flex: none; }
+.brand b { display: block; font-size: 14.5px; line-height: 1.2; color: #fff; }
+.brand small { display: block; font-size: 12px; opacity: .7; }
+.navgroup { display: grid; gap: 2px; }
+.navlabel { font-size: 11px; text-transform: uppercase; letter-spacing: .09em; opacity: .55; padding: 0 10px 4px; font-weight: 600; }
+.navitem { all: unset; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 10px; border-radius: 7px; font-weight: 500; font-size: 14px; }
+.navitem:hover { background: rgba(255,255,255,.06); }
+.navitem.on { background: var(--side-hi); color: #fff; box-shadow: inset 3px 0 0 var(--lime); }
+.navitem .l { display: flex; align-items: center; gap: 10px; }
+.navitem svg { width: 16px; height: 16px; flex: none; opacity: .85; }
+.navitem .badge { font-size: 11.5px; font-weight: 600; background: rgba(255,255,255,.1); padding: 0 7px; border-radius: 999px; font-variant-numeric: tabular-nums; }
+.navitem .badge.warn { background: var(--lime); color: var(--side); }
+.sidefoot { margin-top: auto; display: grid; gap: 10px; border-top: 1px solid rgba(255,255,255,.08); padding-top: 14px; }
+.sidefoot label { font-size: 11px; text-transform: uppercase; letter-spacing: .09em; opacity: .6; font-weight: 600; }
+.sidefoot select { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14); color: var(--side-ink); padding: 7px 9px; border-radius: 7px; width: 100%; }
+.sidefoot select option { color: #15261d; background: #fff; }
+.me { display: flex; align-items: center; gap: 9px; font-size: 13px; }
+.av { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; flex: none; vertical-align: middle; }
+
+.content { min-width: 0; display: flex; flex-direction: column; }
+.topbar { background: var(--surface); border-bottom: 1px solid var(--line); padding: 14px clamp(16px, 3vw, 32px); display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; position: sticky; top: 0; z-index: 4; }
+.crumb { font-size: 12.5px; color: var(--muted); }
+.topbar h1 { margin: 2px 0 0; font-size: 22px; line-height: 1.2; font-weight: 700; color: var(--heading); letter-spacing: -.01em; }
+.topbar .acts { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.yearsel { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); padding-right: 6px; margin-right: 2px; border-right: 1px solid var(--line); }
+.yearsel select { width: auto; padding: 6px 8px; font-weight: 600; color: var(--ink); background: var(--surface-2); }
+.page { padding: 22px clamp(16px, 3vw, 32px) 56px; display: grid; gap: 18px; max-width: 1320px; width: 100%; }
+
+/* Composants */
+.btn { border: 1px solid var(--line); background: var(--surface); padding: 8px 14px; border-radius: 7px; cursor: pointer; font-weight: 600; font-size: 13.5px; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+.btn:hover { border-color: var(--pine); }
+.btn.primary { background: var(--pine); border-color: var(--pine); color: var(--surface); }
+.btn.primary:hover { filter: brightness(1.07); }
+.btn.danger { color: var(--danger); }
+.btn.danger.solid { background: var(--danger); border-color: var(--danger); color: #fff; }
+.btn.small { padding: 5px 10px; font-size: 12.5px; }
+.btn:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, tr:focus-visible, th button:focus-visible, .navitem:focus-visible, .brand:focus-visible { outline: 2px solid var(--fern); outline-offset: 2px; }
+input, select, textarea { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface); }
+textarea { min-height: 90px; resize: vertical; }
+.field { display: grid; gap: 5px; }
+.field label, .lbl { font-size: 12px; font-weight: 600; color: var(--muted); }
+.notice { padding: 10px 14px; border-radius: 7px; background: var(--mint); font-size: 13.5px; }
+.notice.err { background: color-mix(in srgb, var(--danger) 12%, var(--surface)); color: var(--danger); }
+.notice.warn { background: color-mix(in srgb, var(--warn) 12%, var(--surface)); color: var(--ink); display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.muted { color: var(--muted); font-size: 13px; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow-sm); min-width: 0; }
+.card-h { padding: 14px 18px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.card-h h2 { margin: 0; font-size: 14.5px; font-weight: 700; color: var(--heading); }
+.card-h p { margin: 2px 0 0; font-size: 12.5px; color: var(--muted); }
+.card-b { padding: 16px 18px; }
+
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.kpi { padding: 16px 18px; display: grid; gap: 4px; align-content: start; }
+.kpi .k { font-size: 12.5px; color: var(--muted); font-weight: 600; }
+.kpi .v { font-size: 26px; line-height: 1.15; font-weight: 700; color: var(--heading); font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+.kpi .v.neg { color: var(--danger); }
+.kpi .v.warnv { color: var(--warn); }
+.kpi .s { font-size: 12.5px; color: var(--muted); }
+.bar { height: 6px; background: var(--mint); border-radius: 999px; overflow: hidden; }
+.bar > i { display: block; height: 100%; background: var(--pine); border-radius: 999px; width: 0; }
+.bar.high > i { background: var(--warn); }
+.bar.over > i { background: var(--danger); }
+.status { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.status.ok { color: var(--pine); background: var(--mint); }
+.status.high { color: var(--warn); background: color-mix(in srgb, var(--warn) 12%, var(--surface)); }
+.status.over { color: var(--danger); background: color-mix(in srgb, var(--danger) 12%, var(--surface)); }
+.status.none { color: var(--muted); background: var(--surface-2); border: 1px dashed var(--line); }
+
+.grid2 { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 18px; }
+.chartbox { position: relative; height: 290px; }
+.chartlegend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--muted); }
+.chartlegend span { display: inline-flex; align-items: center; gap: 6px; }
+.chartlegend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.chartlegend i.line { height: 2px; border-radius: 0; width: 16px; }
+.chartlegend i.dash { height: 0; width: 16px; border-top: 2px dashed var(--muted); border-radius: 0; }
+.nochart { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 13px; text-align: center; padding: 20px; }
+
+.tablewrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+thead th { font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; background: var(--surface-2); white-space: nowrap; }
+th button { all: unset; cursor: pointer; }
+th button[aria-sort="ascending"]::after { content: " ▲"; font-size: 8px; }
+th button[aria-sort="descending"]::after { content: " ▼"; font-size: 8px; }
+tbody tr.click { cursor: pointer; }
+tbody tr.click:hover { background: var(--surface-2); }
+tbody tr:last-child td { border-bottom: 0; }
+tfoot td { font-weight: 700; border-top: 1px solid var(--line); border-bottom: 0; background: var(--surface-2); }
+.num { font-family: var(--mono); font-size: 13px; white-space: nowrap; }
+.money { text-align: right !important; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.date { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sub { display: block; font-size: 12px; color: var(--muted); }
+.tag { display: inline-block; padding: 1px 8px; border-radius: 5px; background: var(--mint); color: var(--pine); font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+.tag.cr { background: transparent; border: 1px solid var(--sage); color: var(--ink); font-weight: 500; }
+.tag.nolink { background: color-mix(in srgb, var(--warn) 12%, var(--surface)); color: var(--warn); }
+.who { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; white-space: nowrap; }
+.who .av { width: 20px; height: 20px; }
+.empty { padding: 36px 14px; text-align: center; color: var(--muted); }
+.toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: end; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+.toolbar .field { flex: 1 1 170px; }
+.consum { display: grid; grid-template-columns: minmax(70px, 1fr) auto; gap: 10px; align-items: center; min-width: 170px; }
+.consum b { font-variant-numeric: tabular-nums; min-width: 40px; text-align: right; font-weight: 600; }
+
+/* Panneaux */
+.backdrop { position: fixed; inset: 0; background: rgba(6, 22, 14, .5); display: flex; justify-content: flex-end; z-index: 10; }
+.panel { width: min(620px, 100%); height: 100%; background: var(--surface); box-shadow: var(--shadow); display: grid; grid-template-rows: auto 1fr auto; }
+.panel header { padding: 16px 22px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.panel header h2 { margin: 0; font-size: 17px; color: var(--heading); }
+.panel .body { overflow-y: auto; padding: 18px 22px; display: grid; gap: 16px; align-content: start; }
+.panel footer { padding: 14px 22px; border-top: 1px solid var(--line); display: flex; gap: 8px; flex-wrap: wrap; background: var(--surface-2); }
+.panel footer .right { display: flex; gap: 8px; margin-left: auto; }
+.fgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.span2 { grid-column: 1 / -1; }
+.req { color: var(--danger); }
+.section-t { font-size: 11.5px; text-transform: uppercase; letter-spacing: .07em; font-weight: 700; color: var(--pine); }
+.linkbox { border: 1px solid var(--sage); background: var(--surface-2); border-radius: 8px; padding: 12px; display: grid; gap: 8px; }
+.linkhint { font-size: 13px; color: var(--muted); }
+.linkhint b { color: var(--ink); }
+.linkhint.ok b { color: var(--pine); }
+.linkhint.bad { color: var(--danger); }
+.extras { display: grid; gap: 8px; }
+.extra { display: grid; grid-template-columns: 1fr 1.6fr auto; gap: 8px; align-items: center; }
+.trace { background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: grid; gap: 6px; font-size: 13px; }
+.mini-list { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.mini-list table { font-size: 13px; }
+.mini-list th, .mini-list td { padding: 7px 10px; }
+.confirm { background: color-mix(in srgb, var(--danger) 8%, var(--surface)); border: 1px solid var(--danger); border-radius: 7px; padding: 10px 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: 13.5px; }
+.formerr { color: var(--danger); font-size: 13px; }
+.formerr:empty { display: none; }
+.backdrop.center { justify-content: center; align-items: center; padding: 16px; }
+.dialog { background: var(--surface); border-radius: 12px; box-shadow: var(--shadow); width: min(440px, 100%); padding: 22px; display: grid; gap: 14px; }
+.dialog h2 { margin: 0; font-size: 17px; color: var(--heading); }
+.dlg-acts { display: flex; justify-content: flex-end; gap: 8px; }
+.check { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; cursor: pointer; }
+.check input { width: auto; margin-top: 3px; }
+.auth { position: fixed; inset: 0; z-index: 30; background: linear-gradient(135deg, var(--side), var(--pine)); display: grid; place-items: center; padding: 16px; }
+.authcard { background: var(--surface); border-radius: 14px; box-shadow: var(--shadow); width: min(400px, 100%); padding: 28px; display: grid; gap: 14px; }
+.authcard .brand2 { display: flex; align-items: center; gap: 10px; }
+.authcard .brand2 .mark { width: 38px; height: 38px; border-radius: 9px; background: var(--lime); color: var(--side); display: grid; place-items: center; font-weight: 700; }
+.authcard h1 { margin: 0; font-size: 19px; color: var(--heading); }
+.authcard p { margin: 0; }
+.tabs2 { display: grid; grid-template-columns: 1fr 1fr; background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 3px; }
+.tabs2 button { all: unset; text-align: center; padding: 7px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13.5px; color: var(--muted); }
+.tabs2 button.on { background: var(--surface); color: var(--ink); box-shadow: var(--shadow-sm); }
+.authmsg { font-size: 13px; color: var(--muted); }
+.authmsg.err { color: var(--danger); }
+.authmsg.ok { color: var(--pine); }
+.linkbtn { all: unset; cursor: pointer; color: var(--pine); font-size: 13px; font-weight: 600; }
+.ini { width: 22px; height: 22px; border-radius: 50%; display: inline-grid; place-items: center; font-size: 10.5px; font-weight: 700; color: #fff; flex: none; }
+.logout { all: unset; cursor: pointer; font-size: 12.5px; opacity: .75; text-decoration: underline; }
+.toast { position: fixed; bottom: 20px; right: 20px; background: var(--side); color: var(--side-ink); padding: 11px 16px; border-radius: 8px; font-size: 13.5px; z-index: 20; box-shadow: var(--shadow); border-left: 3px solid var(--lime); max-width: 360px; }
+
+@media (max-width: 1100px) {
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid2 { grid-template-columns: 1fr; }
+}
+@media (max-width: 820px) {
+  .app { grid-template-columns: 1fr; }
+  .side { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px 14px; }
+  .brand { border: 0; padding: 0; }
+  .navgroup { display: flex; flex-wrap: wrap; }
+  .navlabel { display: none; }
+  .sidefoot { margin: 0; border: 0; padding: 0; display: flex; align-items: center; }
+  .sidefoot label { display: none; }
+  .topbar { position: static; }
+}
+@media (max-width: 520px) {
+  .kpis, .fgrid { grid-template-columns: 1fr; }
+  .extra { grid-template-columns: 1fr auto; }
+  .extra .xl { grid-column: 1 / -1; }
+  .me span { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+<div class="auth" id="auth">
+  <form class="authcard" id="authForm" novalidate>
+    <div class="brand2"><span class="mark">MP</span><div><h1>Marchés publics</h1><div class="muted">Crédits et dossiers d'achat</div></div></div>
+    <div class="tabs2" id="authTabs"><button type="button" data-mode="login" class="on">Se connecter</button><button type="button" data-mode="signup">Créer un compte</button></div>
+    <div class="field" id="fNom" hidden><label for="aNom">Ton nom (affiché sur les dossiers)</label><input id="aNom" autocomplete="name"></div>
+    <div class="field" id="fEmail"><label for="aEmail">Adresse e-mail</label><input id="aEmail" type="email" autocomplete="email"></div>
+    <div class="field" id="fPass"><label for="aPass">Mot de passe</label><input id="aPass" type="password" autocomplete="current-password"></div>
+    <div class="authmsg" id="authMsg"></div>
+    <button class="btn primary" type="submit" id="authBtn" style="justify-content:center">Se connecter</button>
+    <button class="linkbtn" type="button" id="forgotBtn">Mot de passe oublié ?</button>
+  </form>
+</div>
+
+<div class="app">
+  <aside class="side">
+    <button class="brand" type="button" data-go="tableau"><span class="mark">MP</span><span><b>Marchés publics</b><small>Crédits et dossiers</small></span></button>
+    <nav class="navgroup" aria-label="Menu principal">
+      <div class="navlabel">Menu</div>
+      <button class="navitem" type="button" data-go="tableau"><span class="l"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 7.5 8 2.5l6 5V14H10V10H6v4H2z"/></svg>Tableau de bord</span></button>
+      <button class="navitem" type="button" data-go="credits"><span class="l"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1.5" y="3.5" width="13" height="9" rx="1.5"/><path d="M1.5 6.5h13M4 10h3"/></svg>Crédits</span><span class="badge" id="bCredits">0</span></button>
+      <button class="navitem" type="button" data-go="dossiers"><span class="l"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 3.5h4l1.5 1.5H14v8H2z"/></svg>Dossiers</span><span class="badge" id="bDossiers">0</span></button>
+    </nav>
+    <div class="sidefoot">
+      <label for="skin">Mon thème</label>
+      <select id="skin">
+        <option value="">Vert (automatique)</option>
+        <option value="foret">Vert forêt</option>
+        <option value="menthe">Vert menthe</option>
+        <option value="olive">Vert olive</option>
+        <option value="nuit">Nuit verte</option>
+        <option value="ocean">Bleu océan</option>
+        <option value="bordeaux">Bordeaux</option>
+        <option value="ardoise">Gris ardoise</option>
+      </select>
+      <div class="me" id="me" hidden><span id="meIni"></span><span><span id="meName"></span><br><button class="logout" type="button" id="logoutBtn">Se déconnecter</button></span></div>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div class="topbar">
+      <div>
+        <div class="crumb" id="crumb">Marchés publics</div>
+        <h1 id="pageTitle">Tableau de bord</h1>
+      </div>
+      <div class="acts">
+        <div class="yearsel"><label for="year">Exercice</label><select id="year"></select><button class="btn small" type="button" id="newYearBtn" title="Ouvrir un nouvel exercice">+ Exercice</button></div>
+        <button class="btn" type="button" id="newCreditBtn">+ Crédit</button>
+        <button class="btn primary" type="button" id="newDossierBtn">+ Dossier</button>
+      </div>
+    </div>
+
+    <div class="page">
+      <div class="notice" id="status">Chargement…</div>
+
+      <div class="notice warn" id="rollover" hidden><span id="rollTxt"></span><button class="btn primary small" type="button" id="rollBtn"></button></div>
+
+      <!-- TABLEAU DE BORD -->
+      <section id="vTableau" style="display:grid;gap:18px">
+        <div class="kpis">
+          <div class="card kpi"><div class="k">Crédits ouverts</div><div class="v" id="kCredits">0 €</div><div class="s" id="kCreditsSub"></div></div>
+          <div class="card kpi"><div class="k">Engagé sur crédits</div><div class="v" id="kUsed">0 €</div><div class="bar" id="kBar"><i></i></div><div class="s" id="kUsedSub"></div></div>
+          <div class="card kpi"><div class="k">Disponible</div><div class="v" id="kLeft">—</div><div class="s" id="kLeftSub"></div></div>
+          <div class="card kpi"><div class="k">Dossiers sans crédit</div><div class="v" id="kOrphan">0</div><div class="s" id="kOrphanSub"></div></div>
+        </div>
+        <div class="grid2">
+          <div class="card">
+            <div class="card-h"><div><h2 id="cumTitle">Consommation des crédits</h2><p id="cumSub">Engagé cumulé, mois par mois, face au total des crédits</p></div>
+              <div class="chartlegend" id="cumLegend"><span><i class="line" style="background:var(--pine)"></i>Engagé cumulé</span><span><i class="dash"></i>Total des crédits</span></div></div>
+            <div class="card-b"><div class="chartbox"><canvas id="chCum" aria-label="Consommation cumulée des crédits"></canvas></div></div>
+          </div>
+          <div class="card">
+            <div class="card-h"><div><h2>Crédits à surveiller</h2><p>Les plus consommés de l'exercice</p></div><button class="btn small" type="button" data-go="credits">Tous les crédits →</button></div>
+            <div class="tablewrap"><table><tbody id="watch"></tbody></table></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-h"><div><h2>Crédit et engagé par catalogue</h2><p>Survole une barre pour le détail</p></div>
+            <div class="chartlegend"><span><i style="background:var(--sage)"></i>Crédit</span><span><i style="background:var(--pine)"></i>Engagé</span><span><i style="background:var(--warn)"></i>≥ 85 %</span><span><i style="background:var(--danger)"></i>Dépassé</span></div></div>
+          <div class="card-b"><div class="chartbox" id="catBox"><canvas id="chCat" aria-label="Crédit et engagé par catalogue"></canvas></div></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><div><h2>Derniers dossiers encodés</h2><p>Toutes années confondues</p></div><button class="btn small" type="button" data-go="dossiers">Tous les dossiers →</button></div>
+          <div class="tablewrap"><table>
+            <thead><tr><th>N° dossier</th><th>Date</th><th>Firme</th><th>Crédit</th><th class="money">Montant</th><th>Encodé par</th></tr></thead>
+            <tbody id="recent"></tbody>
+          </table></div>
+        </div>
+      </section>
+
+      <!-- CRÉDITS -->
+      <section id="vCredits" style="display:grid;gap:18px" hidden>
+        <div class="kpis">
+          <div class="card kpi"><div class="k">Crédits ouverts</div><div class="v" id="ckTotal">0 €</div><div class="s" id="ckTotalSub"></div></div>
+          <div class="card kpi"><div class="k">Engagé sur crédits</div><div class="v" id="ckUsed">0 €</div><div class="bar" id="ckBar"><i></i></div></div>
+          <div class="card kpi"><div class="k">Disponible</div><div class="v" id="ckLeft">—</div></div>
+          <div class="card kpi"><div class="k">Crédits en alerte</div><div class="v" id="ckAlert">0</div><div class="s">à 85 % ou plus</div></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><div><h2>Montant et engagé par crédit</h2><p>Le graphique suit tes crédits et les dossiers qui y sont liés</p></div>
+            <div class="chartlegend"><span><i style="background:var(--sage)"></i>Montant du crédit</span><span><i style="background:var(--pine)"></i>Engagé</span><span><i style="background:var(--warn)"></i>≥ 85 %</span><span><i style="background:var(--danger)"></i>Dépassé</span></div></div>
+          <div class="card-b"><div class="chartbox" id="crBox"><canvas id="chCredits" aria-label="Montant et engagé par crédit"></canvas></div></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><div><h2>Liste des crédits</h2><p>Clique sur un crédit pour le modifier et voir ses dossiers</p></div><button class="btn primary small" type="button" id="newCreditBtn2">+ Nouveau crédit</button></div>
+          <div class="tablewrap"><table>
+            <thead><tr><th>Crédit</th><th>Catalogue</th><th>Exercice</th><th class="money">Montant</th><th class="money">Engagé</th><th class="money">Disponible</th><th>Consommation</th><th class="money">Dossiers</th></tr></thead>
+            <tbody id="crRows"></tbody>
+            <tfoot><tr><td colspan="3">Total</td><td class="money" id="crfTotal"></td><td class="money" id="crfUsed"></td><td class="money" id="crfLeft"></td><td id="crfPct"></td><td class="money" id="crfN"></td></tr></tfoot>
+          </table></div>
+        </div>
+      </section>
+
+      <!-- DOSSIERS -->
+      <section id="vDossiers" style="display:grid;gap:18px" hidden>
+        <div class="card">
+          <div class="toolbar">
+            <div class="field" style="flex:2 1 240px"><label for="q">Rechercher</label><input id="q" type="search" placeholder="N°, firme, objet, notes…" autocomplete="off"></div>
+            <div class="field"><label for="fCat">Catalogue</label><select id="fCat"></select></div>
+            <div class="field"><label for="fCredit">Crédit</label><select id="fCredit"></select></div>
+          </div>
+          <div class="tablewrap"><table>
+            <thead><tr>
+              <th><button type="button" data-sort="numero">N° dossier</button></th>
+              <th><button type="button" data-sort="date">Date</button></th>
+              <th><button type="button" data-sort="firme">Firme</button></th>
+              <th><button type="button" data-sort="catalogue">Catalogue</button></th>
+              <th>Crédit</th>
+              <th class="money"><button type="button" data-sort="montant">Montant</button></th>
+              <th>Encodé par</th>
+            </tr></thead>
+            <tbody id="rows"></tbody>
+            <tfoot><tr><td colspan="5" id="footLbl">Total</td><td class="money" id="footSum"></td><td></td></tr></tfoot>
+          </table></div>
+          <div class="empty" id="empty" hidden></div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- NOUVEL EXERCICE -->
+<div class="backdrop center" id="yBack" hidden>
+  <form class="dialog" id="yForm" role="dialog" aria-modal="true" aria-labelledby="yTitle" novalidate>
+    <h2 id="yTitle">Ouvrir un exercice</h2>
+    <div class="field"><label for="yIn">Année</label><input id="yIn" type="number" min="2000" max="2100" step="1" class="tn" required></div>
+    <label class="check"><input type="checkbox" id="yCopy" checked> <span id="yCopyLbl">Reprendre les crédits de l'exercice précédent</span></label>
+    <div class="muted" id="yCopyHint">Les intitulés, articles budgétaires, catalogues et montants sont recopiés. Tu pourras ajuster les montants ensuite.</div>
+    <div class="formerr" id="yErr"></div>
+    <div class="dlg-acts"><button class="btn" type="button" data-close>Annuler</button><button class="btn primary" type="submit" id="ySave">Ouvrir l'exercice</button></div>
+  </form>
+</div>
+
+<!-- FICHE DOSSIER -->
+<div class="backdrop" id="dBack" hidden>
+  <form class="panel" id="dForm" role="dialog" aria-modal="true" aria-labelledby="dTitle" novalidate>
+    <header><h2 id="dTitle">Nouveau dossier</h2><button class="btn small" type="button" data-close>Fermer</button></header>
+    <div class="body">
+      <div class="fgrid">
+        <div class="field"><label for="numero">N° de dossier <span class="req">*</span></label><input id="numero" required autocomplete="off"></div>
+        <div class="field"><label for="date">Date <span class="req">*</span></label><input id="date" type="date" required></div>
+        <div class="field span2"><label for="firme">Firme</label><input id="firme" list="firmesList" autocomplete="off"></div>
+        <div class="field"><label for="catalogue">Catalogue</label><input id="catalogue" list="catsList" autocomplete="off"></div>
+        <div class="field"><label for="montant">Montant (€)</label><input id="montant" type="number" min="0" step="0.01" inputmode="decimal" class="tn"></div>
+      </div>
+      <div class="linkbox">
+        <div class="field"><label for="creditId">Crédit imputé</label><select id="creditId"></select></div>
+        <div class="linkhint" id="linkHint"></div>
+      </div>
+      <div class="field"><label for="objet">Objet</label><input id="objet" autocomplete="off" placeholder="ex. Fourniture de mobilier de bureau"></div>
+      <div class="section-t">Champs libres</div>
+      <div class="extras"><div id="extras" class="extras"></div><div><button class="btn small" type="button" id="addExtra">+ Ajouter un champ</button></div></div>
+      <div class="field"><label for="notes">Notes</label><textarea id="notes"></textarea></div>
+      <div class="trace" id="dTrace" hidden></div>
+      <div class="confirm" id="dConfirm" hidden><span>Supprimer définitivement ce dossier ?</span><button class="btn danger solid small" type="button" id="dConfirmDel">Oui, supprimer</button><button class="btn small" type="button" data-cancel-del>Non</button></div>
+      <div class="formerr" id="dErr" role="alert"></div>
+    </div>
+    <footer><button class="btn danger" type="button" id="dDel">Supprimer</button><div class="right"><button class="btn" type="button" data-close>Annuler</button><button class="btn primary" type="submit" id="dSave">Enregistrer</button></div></footer>
+  </form>
+</div>
+
+<!-- FICHE CRÉDIT -->
+<div class="backdrop" id="cBack" hidden>
+  <form class="panel" id="cForm" role="dialog" aria-modal="true" aria-labelledby="cTitle" novalidate>
+    <header><h2 id="cTitle">Nouveau crédit</h2><button class="btn small" type="button" data-close>Fermer</button></header>
+    <div class="body">
+      <div class="fgrid">
+        <div class="field span2"><label for="cLibelle">Intitulé du crédit <span class="req">*</span></label><input id="cLibelle" required autocomplete="off" placeholder="ex. Fournitures de bureau"></div>
+        <div class="field"><label for="cAnnee">Exercice <span class="req">*</span></label><input id="cAnnee" type="number" min="2000" max="2100" step="1" class="tn" required></div>
+        <div class="field"><label for="cMontant">Montant du crédit (€) <span class="req">*</span></label><input id="cMontant" type="number" min="0" step="0.01" inputmode="decimal" class="tn" required></div>
+        <div class="field"><label for="cRef">Article budgétaire / référence</label><input id="cRef" autocomplete="off" placeholder="ex. 104/123-02"></div>
+        <div class="field"><label for="cCatalogue">Catalogue lié</label><input id="cCatalogue" list="catsList" autocomplete="off"></div>
+        <div class="field span2"><label for="cNotes">Notes</label><textarea id="cNotes" style="min-height:70px"></textarea></div>
+      </div>
+      <div class="muted">Les dossiers de même exercice et de même catalogue se lieront automatiquement à ce crédit.</div>
+      <div id="cLinked"></div>
+      <div class="trace" id="cTrace" hidden></div>
+      <div class="confirm" id="cConfirm" hidden><span id="cConfirmTxt">Supprimer ce crédit ?</span><button class="btn danger solid small" type="button" id="cConfirmDel">Oui, supprimer</button><button class="btn small" type="button" data-cancel-del>Non</button></div>
+      <div class="formerr" id="cErr" role="alert"></div>
+    </div>
+    <footer><button class="btn danger" type="button" id="cDel">Supprimer</button><div class="right"><button class="btn" type="button" data-close>Annuler</button><button class="btn primary" type="submit" id="cSave">Enregistrer</button></div></footer>
+  </form>
+</div>
+
+<datalist id="firmesList"></datalist>
+<datalist id="catsList"></datalist>
+<datalist id="extraLabels"></datalist>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var eur = new Intl.NumberFormat("fr-BE", { style: "currency", currency: "EUR" });
+  var eur0 = new Intl.NumberFormat("fr-BE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
+  var MONTHS = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
+  var NO_CAT = "(sans catalogue)";
+  var NOW = new Date(), CUR = String(NOW.getFullYear());
+
+  var dCol = null, cCol = null, prefsRef = null, userApi = null, meId = null, canWrite = true;
+  var dossiers = [], credits = [], extraYears = [], settingsRef = null, settingsData = {};
+  var view = "tableau", year = CUR;
+  var editingD = null, editingC = null, manualCredit = false;
+  var sort = { key: "date", dir: "desc" };
+
+  /* ---------- Outils ---------- */
+  function num(v) { var n = parseFloat(v); return isFinite(n) ? n : null; }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function norm(s) { return String(s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim(); }
+  function fmtDate(s) { var p = (s || "").split("-"); return p.length === 3 ? p[2] + "/" + p[1] + "/" + p[0] : (s || ""); }
+  function fmtStamp(t) { return t ? new Date(t).toLocaleString("fr-BE", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }) : ""; }
+  function yearOf(d) { return (d.date || "").slice(0, 4); }
+  function catOf(x) { return (x.catalogue || "").trim() || NO_CAT; }
+  function amt(d) { return num(d.montant) || 0; }
+  function plural(n, w) { return n + " " + w + (n > 1 ? "s" : ""); }
+  function pctClass(p) { return p == null ? "" : p > 100 ? "over" : p >= 85 ? "high" : ""; }
+  function uniq(a) { var o = {}; a.forEach(function (v) { if (v) o[v] = 1; }); return Object.keys(o).sort(function (x, y) { return x.localeCompare(y, "fr", { numeric: true }); }); }
+  function opt(v) { return '<option value="' + esc(v) + '">'; }
+  function inYear(y) { return year === "" || y === year; }
+  function setStatus(msg, cls) { var el = $("status"); el.hidden = !msg; el.textContent = msg || ""; el.className = "notice" + (cls ? " " + cls : ""); }
+  var tt; function toast(m) { var t = $("toast"); t.textContent = m; t.hidden = false; clearTimeout(tt); tt = setTimeout(function () { t.hidden = true; }, 2800); }
+  var profils = {};
+  function nameOf(uid) { var p = profils[uid]; return (p && p.nom) || "Utilisateur"; }
+  function colorOf(uid) { var h = 0; for (var i = 0; i < uid.length; i++) h = (h * 31 + uid.charCodeAt(i)) % 360; return "hsl(" + h + ", 45%, 38%)"; }
+  function iniHTML(uid) { var n = nameOf(uid).trim().split(/\s+/); var t = ((n[0] || "?")[0] + (n.length > 1 ? n[n.length - 1][0] : "")).toUpperCase(); return '<span class="ini" style="background:' + colorOf(uid) + '">' + esc(t) + '</span>'; }
+  function whoHTML(uid) { return uid ? '<span class="who">' + iniHTML(uid) + '<span>' + esc(nameOf(uid) + (uid === meId ? " (toi)" : "")) + '</span></span>' : '<span class="muted">—</span>'; }
+  function setBar(el, pct) { el.className = "bar " + pctClass(pct); el.firstElementChild.style.width = Math.min(100, pct || 0) + "%"; }
+  function statusChip(p) {
+    if (p == null) return '<span class="status none">Sans crédit</span>';
+    var c = pctClass(p) || "ok", t = c === "over" ? "Dépassé" : c === "high" ? "Attention" : "Dans le crédit";
+    return '<span class="status ' + c + '">' + (c === "ok" ? "●" : "▲") + " " + t + "</span>";
+  }
+  function consumHTML(p) { return '<div class="consum"><div class="bar ' + pctClass(p) + '"><i style="width:' + Math.min(100, p || 0) + '%"></i></div><b>' + (p != null ? p.toFixed(0) + " %" : "—") + '</b></div>'; }
+  function errMsg(err) {
+    var c = err && err.code;
+    if (c === "23505") return "Ce numéro de dossier existe déjà.";
+    if (c === "42501" || c === "PGRST301") return "Ton compte n'a pas le droit de modifier ces données. Demande à l'administrateur d'ajouter ton adresse e-mail.";
+    return "L'enregistrement a échoué. Vérifie ta connexion et réessaie.";
+  }
+
+  /* ---------- Calculs ---------- */
+  function creditById(id) { return credits.find(function (c) { return c.id === id; }) || null; }
+  function linkedTo(c) { return dossiers.filter(function (d) { return d.creditId === c.id; }); }
+  function creditStats(c) {
+    var ds = linkedTo(c), used = ds.reduce(function (s, d) { return s + amt(d); }, 0), m = num(c.montant) || 0;
+    return { c: c, n: ds.length, used: used, budget: m, left: m - used, pct: m ? used / m * 100 : null };
+  }
+  function creditLabel(c) { return (c.libelle || "Crédit") + (c.reference ? " (" + c.reference + ")" : ""); }
+  function isOrphan(d) { return !d.creditId || !creditById(d.creditId); }
+  function scope() {
+    var ds = dossiers.filter(function (d) { return inYear(yearOf(d)); });
+    var cs = credits.filter(function (c) { return inYear(String(c.annee)); });
+    var st = cs.map(creditStats);
+    var total = st.reduce(function (s, x) { return s + x.budget; }, 0);
+    var usedOn = st.reduce(function (s, x) { return s + x.used; }, 0);
+    var used = ds.reduce(function (s, d) { return s + amt(d); }, 0);
+    var orphans = ds.filter(isOrphan);
+    return { ds: ds, cs: cs, st: st, total: total, usedOn: usedOn, used: used, left: total - usedOn, pct: total ? usedOn / total * 100 : null, orphans: orphans };
+  }
+  function allYears() {
+    var y = {}; y[CUR] = 1; y[String(+CUR + 1)] = 1;
+    extraYears.forEach(function (k) { if (/^\d{4}$/.test(k)) y[k] = 1; });
+    credits.forEach(function (c) { if (/^\d{4}$/.test(String(c.annee))) y[String(c.annee)] = 1; });
+    dossiers.forEach(function (d) { if (/^\d{4}$/.test(yearOf(d))) y[yearOf(d)] = 1; });
+    return Object.keys(y).sort().reverse();
+  }
+  // Choix automatique du crédit : même exercice, même catalogue ; sinon l'unique crédit sans catalogue de l'exercice.
+  function autoCredit(y, cat) {
+    var cs = credits.filter(function (c) { return String(c.annee) === y; });
+    var n = norm(cat);
+    if (n) { var same = cs.filter(function (c) { return norm(c.catalogue) === n; }); if (same.length === 1) return same[0]; if (same.length > 1) return null; }
+    var general = cs.filter(function (c) { return !norm(c.catalogue); });
+    return general.length === 1 ? general[0] : null;
+  }
+
+  /* ---------- Graphiques ---------- */
+  var charts = {};
+  function tok(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+  function shortEur(v) { var a = Math.abs(v); return a >= 1e6 ? (v / 1e6).toLocaleString("fr-BE", { maximumFractionDigits: 1 }) + " M€" : a >= 1e3 ? (v / 1e3).toLocaleString("fr-BE", { maximumFractionDigits: 1 }) + " k€" : Math.round(v) + " €"; }
+  function hexA(color, a) { var m = /^#?([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i.exec(color); return m ? "rgba(" + parseInt(m[1], 16) + "," + parseInt(m[2], 16) + "," + parseInt(m[3], 16) + "," + a + ")" : color; }
+  function baseOptions() {
+    var ink = tok("--muted"), line = tok("--line"), f = { family: "IBM Plex Sans", size: 12 };
+    return {
+      responsive: true, maintainAspectRatio: false, animation: { duration: 350 },
+      interaction: { mode: "index", intersect: false }, layout: { padding: { top: 4, right: 8 } },
+      plugins: { legend: { display: false }, tooltip: {
+        backgroundColor: tok("--side"), titleColor: "#fff", bodyColor: tok("--side-ink"), padding: 10, cornerRadius: 6, boxPadding: 4, usePointStyle: true,
+        titleFont: { family: "IBM Plex Sans", weight: "600" }, bodyFont: { family: "IBM Plex Sans" },
+        callbacks: { label: function (c) { return " " + c.dataset.label + " : " + (c.raw == null ? "—" : eur.format(c.raw)); } } } },
+      scales: {
+        x: { grid: { display: false }, border: { color: line }, ticks: { color: ink, font: f } },
+        y: { beginAtZero: true, grid: { color: line, drawTicks: false }, border: { display: false }, ticks: { color: ink, padding: 8, font: f, maxTicksLimit: 6, callback: function (v) { return shortEur(v); } } }
+      }
+    };
+  }
+  function drawChart(id, cfg, emptyMsg) {
+    var canvas = $(id); if (!canvas) return;
+    var box = canvas.parentElement, msg = box.querySelector(".nochart");
+    if (typeof Chart === "undefined" || emptyMsg) {
+      if (charts[id]) { charts[id].destroy(); delete charts[id]; }
+      canvas.hidden = true;
+      if (!msg) { msg = document.createElement("div"); msg.className = "nochart"; box.appendChild(msg); }
+      msg.textContent = typeof Chart === "undefined" ? "Graphique indisponible dans cette vue." : emptyMsg;
+      return;
+    }
+    canvas.hidden = false; if (msg) msg.remove();
+    var ch = charts[id];
+    var sig = JSON.stringify([cfg.data.labels, cfg.data.datasets.map(function (d) { return [d.label, d.data, d.backgroundColor]; })]);
+    if (ch && ch._sig === sig) return;
+    if (ch && ch.config.type === cfg.type) { ch.data = cfg.data; ch.options = cfg.options; ch.update(); }
+    else { if (ch) ch.destroy(); ch = charts[id] = new Chart(canvas, cfg); }
+    ch._sig = sig;
+  }
+  function rebuildCharts() { Object.keys(charts).forEach(function (k) { charts[k].destroy(); delete charts[k]; }); render(); }
+
+  function budgetBars(id, boxId, rows, labelOf, emptyMsg) {
+    $(boxId).style.height = Math.max(220, rows.length * 46 + 60) + "px";
+    if (!rows.length) return drawChart(id, null, emptyMsg);
+    var pine = tok("--pine"), warn = tok("--warn"), danger = tok("--danger"), line = tok("--line"), f = { family: "IBM Plex Sans", size: 12 };
+    var o = baseOptions();
+    o.indexAxis = "y";
+    o.interaction = { mode: "index", axis: "y", intersect: false };
+    o.scales = {
+      x: { beginAtZero: true, grid: { color: line, drawTicks: false }, border: { display: false }, ticks: { color: tok("--muted"), font: f, maxTicksLimit: 7, callback: function (v) { return shortEur(v); } } },
+      y: { grid: { display: false }, border: { color: line }, ticks: { color: tok("--ink"), font: { family: "IBM Plex Sans", size: 12.5, weight: "600" }, callback: function (v, i) { var l = labelOf(rows[i]); return l.length > 28 ? l.slice(0, 27) + "…" : l; } } }
+    };
+    o.plugins.tooltip.callbacks = {
+      title: function (it) { return labelOf(rows[it[0].dataIndex]); },
+      label: function (c) { return " " + c.dataset.label + " : " + (c.raw == null ? "aucun" : eur.format(c.raw)); },
+      afterBody: function (it) {
+        var r = rows[it[0].dataIndex], out = ["", plural(r.n, "dossier")];
+        if (r.budget) out.push("Disponible : " + eur.format(r.budget - r.used), "Consommation : " + (r.used / r.budget * 100).toFixed(1).replace(".", ",") + " %");
+        return out;
+      }
+    };
+    drawChart(id, { type: "bar", data: { labels: rows.map(labelOf), datasets: [
+      { label: "Crédit", data: rows.map(function (r) { return r.budget || null; }), backgroundColor: tok("--sage"), borderRadius: 4, borderSkipped: "start", categoryPercentage: .72, barPercentage: .9, maxBarThickness: 18 },
+      { label: "Engagé", data: rows.map(function (r) { return r.used; }), backgroundColor: rows.map(function (r) { var p = r.budget ? r.used / r.budget * 100 : null; return p > 100 ? danger : p >= 85 ? warn : pine; }), borderRadius: 4, borderSkipped: "start", categoryPercentage: .72, barPercentage: .9, maxBarThickness: 18 }
+    ] }, options: o });
+  }
+
+  /* ---------- Navigation ---------- */
+  var VIEWS = { tableau: "Tableau de bord", credits: "Crédits", dossiers: "Dossiers" };
+  function go(v) {
+    view = VIEWS[v] ? v : "tableau";
+    if (location.hash.slice(1) !== view) { try { history.replaceState(null, "", "#" + view); } catch (e) { location.hash = view; } }
+    render(); window.scrollTo(0, 0);
+  }
+  function readHash() { var h = location.hash.slice(1); view = VIEWS[h] ? h : "tableau"; }
+  window.addEventListener("hashchange", function () { readHash(); render(); });
+  document.addEventListener("click", function (e) { var b = e.target.closest("[data-go]"); if (b) go(b.dataset.go); });
+
+  /* ---------- Rendu ---------- */
+  function render() {
+    var ys = allYears(), ysel = $("year");
+    ysel.innerHTML = ys.map(function (y) { return '<option value="' + y + '">' + y + '</option>'; }).join("") + '<option value="">Toutes</option>';
+    ysel.value = year === "" || ys.indexOf(year) >= 0 ? year : CUR;
+    document.querySelectorAll(".navitem[data-go]").forEach(function (b) { b.classList.toggle("on", b.dataset.go === view); });
+    ["tableau", "credits", "dossiers"].forEach(function (v) { $("v" + v.charAt(0).toUpperCase() + v.slice(1)).hidden = view !== v; });
+    $("pageTitle").textContent = VIEWS[view];
+    $("crumb").textContent = "Marchés publics · " + (year ? "exercice " + year : "toutes années");
+    $("newCreditBtn").hidden = $("newDossierBtn").hidden = $("newCreditBtn2").hidden = $("newYearBtn").hidden = !canWrite;
+
+    var sc = scope();
+    $("bCredits").textContent = sc.cs.length;
+    $("bDossiers").textContent = sc.ds.length;
+    $("bDossiers").classList.toggle("warn", sc.orphans.length > 0);
+    $("bDossiers").title = sc.orphans.length ? plural(sc.orphans.length, "dossier") + " sans crédit" : "";
+
+    $("firmesList").innerHTML = uniq(dossiers.map(function (d) { return (d.firme || "").trim(); })).map(opt).join("");
+    $("catsList").innerHTML = uniq(dossiers.map(function (d) { return (d.catalogue || "").trim(); }).concat(credits.map(function (c) { return (c.catalogue || "").trim(); }))).map(opt).join("");
+    var labels = []; dossiers.forEach(function (d) { (d.extras || []).forEach(function (x) { labels.push((x.label || "").trim()); }); });
+    $("extraLabels").innerHTML = uniq(labels).map(opt).join("");
+
+    var prevY = year ? String(+year - 1) : "";
+    var prevCredits = prevY ? credits.filter(function (c) { return String(c.annee) === prevY; }) : [];
+    var showRoll = canWrite && year && !sc.cs.length && prevCredits.length && view !== "dossiers";
+    $("rollover").hidden = !showRoll;
+    if (showRoll) {
+      $("rollTxt").textContent = "Aucun crédit encodé pour " + year + ". Tu peux reprendre " + (prevCredits.length > 1 ? "les " + plural(prevCredits.length, "crédit") : "le crédit") + " de " + prevY + " et ajuster les montants ensuite.";
+      $("rollBtn").textContent = "Reprendre les crédits de " + prevY;
+    }
+    if (view === "tableau") renderTableau(sc, ys); else if (view === "credits") renderCredits(sc); else renderDossiers(sc);
+    fillNames();
+  }
+
+  function renderTableau(sc, ys) {
+    $("kCredits").textContent = eur0.format(sc.total);
+    $("kCreditsSub").textContent = sc.cs.length ? plural(sc.cs.length, "crédit") + " encodé" + (sc.cs.length > 1 ? "s" : "") : "Aucun crédit : clique sur « + Crédit »";
+    $("kUsed").textContent = eur0.format(sc.usedOn);
+    setBar($("kBar"), sc.pct);
+    $("kUsedSub").innerHTML = sc.pct != null ? sc.pct.toFixed(1).replace(".", ",") + " % des crédits · " + statusChip(sc.pct) : "Engagé total : " + eur0.format(sc.used);
+    $("kLeft").textContent = sc.total ? eur0.format(sc.left) : "—";
+    $("kLeft").classList.toggle("neg", sc.total > 0 && sc.left < 0);
+    $("kLeftSub").textContent = sc.total ? "sur " + eur0.format(sc.total) + " de crédits" : "";
+    $("kOrphan").textContent = sc.orphans.length;
+    $("kOrphan").classList.toggle("warnv", sc.orphans.length > 0);
+    $("kOrphanSub").textContent = sc.orphans.length ? eur0.format(sc.orphans.reduce(function (s, d) { return s + amt(d); }, 0)) + " non imputés" : "Tous les dossiers sont liés";
+
+    // Consommation cumulée (une année) ou comparaison (toutes années)
+    if (year) {
+      $("cumTitle").textContent = "Consommation des crédits " + year;
+      $("cumSub").textContent = "Engagé cumulé, mois par mois, face au total des crédits";
+      $("cumLegend").innerHTML = '<span><i class="line" style="background:var(--pine)"></i>Engagé cumulé</span><span><i class="dash"></i>Total des crédits</span>';
+      var m = [0,0,0,0,0,0,0,0,0,0,0,0];
+      sc.ds.forEach(function (d) { var i = parseInt((d.date || "").slice(5, 7), 10) - 1; if (i >= 0 && i < 12) m[i] += amt(d); });
+      var last = year === CUR ? NOW.getMonth() : (year > CUR ? -1 : 11), run = 0, cum = [];
+      for (var i = 0; i < 12; i++) { run += m[i]; cum.push(i <= last ? run : null); }
+      if (!sc.ds.length && !sc.total) drawChart("chCum", null, "Encode un crédit et des dossiers pour " + year + " pour voir la courbe.");
+      else {
+        var pine = tok("--pine"), o = baseOptions(), ds = [{ label: "Engagé cumulé", data: cum, borderColor: pine, borderWidth: 2, tension: .25, fill: "origin", backgroundColor: hexA(pine, .12), pointRadius: cum.map(function (v, i) { return i === last ? 5 : 0; }), pointHoverRadius: 5, pointBackgroundColor: pine, pointBorderColor: tok("--surface"), pointBorderWidth: 2 }];
+        if (sc.total) { ds.push({ label: "Total des crédits", data: MONTHS.map(function () { return sc.total; }), borderColor: tok("--muted"), borderWidth: 1.5, borderDash: [6, 5], pointRadius: 0, pointHoverRadius: 0, fill: false }); o.scales.y.suggestedMax = Math.max(sc.total, run) * 1.08; }
+        drawChart("chCum", { type: "line", data: { labels: MONTHS, datasets: ds }, options: o });
+      }
+    } else {
+      $("cumTitle").textContent = "Comparaison des exercices";
+      $("cumSub").textContent = "Engagé par exercice, et total des crédits ouverts";
+      $("cumLegend").innerHTML = '<span><i style="background:var(--pine)"></i>Engagé</span><span><i class="line" style="background:var(--muted)"></i>Crédits</span>';
+      var ya = ys.slice().reverse();
+      var eng = ya.map(function (y) { return dossiers.filter(function (d) { return yearOf(d) === y; }).reduce(function (s, d) { return s + amt(d); }, 0); });
+      var tot = ya.map(function (y) { var t = credits.filter(function (c) { return String(c.annee) === y; }).reduce(function (s, c) { return s + (num(c.montant) || 0); }, 0); return t || null; });
+      drawChart("chCum", { type: "bar", data: { labels: ya, datasets: [
+        { type: "bar", label: "Engagé", data: eng, backgroundColor: eng.map(function (v, i) { return tot[i] && v > tot[i] ? tok("--danger") : tok("--pine"); }), borderRadius: 4, borderSkipped: "start", maxBarThickness: 44, order: 2 },
+        { type: "line", label: "Crédits", data: tot, showLine: false, pointStyle: "line", pointRadius: 18, pointHoverRadius: 18, pointBorderWidth: 2.5, borderColor: tok("--muted"), backgroundColor: tok("--muted"), order: 1 }
+      ] }, options: baseOptions() });
+    }
+
+    var watch = sc.st.filter(function (x) { return x.budget; }).sort(function (a, b) { return b.pct - a.pct; }).slice(0, 6);
+    $("watch").innerHTML = watch.length ? watch.map(function (x) {
+      return '<tr class="click" tabindex="0" data-credit="' + esc(x.c.id) + '"><td><b>' + esc(x.c.libelle) + '</b><span class="sub">' + esc([x.c.catalogue ? "cat. " + x.c.catalogue : "", year ? "" : x.c.annee, eur0.format(x.left) + " disponibles"].filter(Boolean).join(" · ")) + '</span></td><td style="width:44%">' + consumHTML(x.pct) + '</td></tr>';
+    }).join("") : '<tr><td class="empty">Aucun crédit pour cet exercice. Clique sur « + Crédit » pour encoder tes crédits.</td></tr>';
+
+    // Par catalogue : crédits du catalogue vs engagé du catalogue
+    var by = {};
+    sc.cs.forEach(function (c) { var k = catOf(c); by[k] = by[k] || { k: k, budget: 0, used: 0, n: 0 }; by[k].budget += num(c.montant) || 0; });
+    sc.ds.forEach(function (d) { var k = catOf(d); by[k] = by[k] || { k: k, budget: 0, used: 0, n: 0 }; by[k].used += amt(d); by[k].n++; });
+    var rows = Object.keys(by).map(function (k) { return by[k]; }).sort(function (a, b) { return Math.max(b.used, b.budget) - Math.max(a.used, a.budget); });
+    budgetBars("chCat", "catBox", rows, function (r) { return r.k === NO_CAT ? r.k : "Catalogue " + r.k; }, "Rien à afficher pour cet exercice.");
+
+    var recent = dossiers.slice().sort(function (a, b) { return (b.createdAt || 0) - (a.createdAt || 0); }).slice(0, 6);
+    $("recent").innerHTML = recent.length ? recent.map(function (d) { return rowHTML(d, false); }).join("") : '<tr><td colspan="6" class="empty">Aucun dossier encodé pour l\'instant.</td></tr>';
+  }
+
+  function creditTag(d) {
+    var c = d.creditId ? creditById(d.creditId) : null;
+    return c ? '<span class="tag cr">' + esc(c.libelle) + '</span>' : '<span class="tag nolink">Sans crédit</span>';
+  }
+  function rowHTML(d, withCat) {
+    var m = num(d.montant);
+    return '<tr class="click" tabindex="0" data-id="' + esc(d.id) + '">' +
+      '<td class="num">' + esc(d.numero) + '</td><td class="date">' + esc(fmtDate(d.date)) + '</td>' +
+      '<td>' + esc(d.firme || "—") + (d.objet ? '<span class="sub">' + esc(d.objet) + '</span>' : '') + '</td>' +
+      (withCat ? '<td>' + ((d.catalogue || "").trim() ? '<span class="tag">' + esc(d.catalogue.trim()) + '</span>' : '<span class="muted">—</span>') + '</td>' : '') +
+      '<td>' + creditTag(d) + '</td>' +
+      '<td class="money">' + (m != null ? esc(eur.format(m)) : '') + '</td><td>' + whoHTML(d.createdBy) + '</td></tr>';
+  }
+
+  function renderCredits(sc) {
+    $("ckTotal").textContent = eur0.format(sc.total);
+    $("ckTotalSub").textContent = plural(sc.cs.length, "crédit");
+    $("ckUsed").textContent = eur0.format(sc.usedOn); setBar($("ckBar"), sc.pct);
+    $("ckLeft").textContent = sc.total ? eur0.format(sc.left) : "—"; $("ckLeft").classList.toggle("neg", sc.total > 0 && sc.left < 0);
+    var alerts = sc.st.filter(function (x) { return x.pct != null && x.pct >= 85; }).length;
+    $("ckAlert").textContent = alerts; $("ckAlert").classList.toggle("neg", alerts > 0);
+
+    var st = sc.st.slice().sort(function (a, b) { return String(b.c.annee).localeCompare(String(a.c.annee)) || (a.c.libelle || "").localeCompare(b.c.libelle || "", "fr", { numeric: true }); });
+    budgetBars("chCredits", "crBox", st, function (x) { return x.c.libelle + (x.c.catalogue ? " · " + x.c.catalogue : ""); }, "Aucun crédit pour cet exercice.");
+    $("crRows").innerHTML = st.length ? st.map(function (x) {
+      return '<tr class="click" tabindex="0" data-credit="' + esc(x.c.id) + '"><td><b>' + esc(x.c.libelle) + '</b>' + (x.c.reference ? '<span class="sub">' + esc(x.c.reference) + '</span>' : '') + '</td>' +
+        '<td>' + (x.c.catalogue ? '<span class="tag">' + esc(x.c.catalogue) + '</span>' : '<span class="muted">Tous</span>') + '</td>' +
+        '<td class="tn">' + esc(x.c.annee) + '</td><td class="money">' + esc(eur.format(x.budget)) + '</td><td class="money">' + esc(eur.format(x.used)) + '</td>' +
+        '<td class="money" style="' + (x.left < 0 ? 'color:var(--danger);font-weight:600' : '') + '">' + esc(eur.format(x.left)) + '</td>' +
+        '<td>' + consumHTML(x.pct) + '</td><td class="money">' + x.n + '</td></tr>';
+    }).join("") : '<tr><td colspan="8" class="empty">Aucun crédit pour cet exercice. Clique sur « + Nouveau crédit ».</td></tr>';
+    $("crfTotal").textContent = eur.format(sc.total); $("crfUsed").textContent = eur.format(sc.usedOn);
+    $("crfLeft").textContent = eur.format(sc.left); $("crfPct").innerHTML = consumHTML(sc.pct);
+    $("crfN").textContent = st.reduce(function (s, x) { return s + x.n; }, 0);
+  }
+
+  function renderDossiers(sc) {
+    var cats = uniq(sc.ds.map(catOf)), fc = $("fCat"), cur = fc.value;
+    fc.innerHTML = '<option value="">Tous</option>' + cats.map(function (c) { return '<option value="' + esc(c) + '">' + esc(c) + '</option>'; }).join("");
+    fc.value = cats.indexOf(cur) >= 0 ? cur : "";
+    var fr = $("fCredit"), curC = fr.value;
+    fr.innerHTML = '<option value="">Tous</option><option value="__none">Sans crédit</option>' + sc.cs.map(function (c) { return '<option value="' + esc(c.id) + '">' + esc(c.libelle + (year ? "" : " · " + c.annee)) + '</option>'; }).join("");
+    fr.value = curC === "__none" || sc.cs.some(function (c) { return c.id === curC; }) ? curC : "";
+    var terms = norm($("q").value).split(/\s+/).filter(Boolean);
+    var list = sc.ds.filter(function (d) {
+      if (fc.value && catOf(d) !== fc.value) return false;
+      if (fr.value === "__none" && !isOrphan(d)) return false;
+      if (fr.value && fr.value !== "__none" && d.creditId !== fr.value) return false;
+      var c = d.creditId ? creditById(d.creditId) : null;
+      var hay = norm([d.numero, d.firme, d.catalogue, d.objet, d.notes, c ? c.libelle : ""].concat((d.extras || []).map(function (x) { return x.label + " " + x.value; })).join(" "));
+      return terms.every(function (t) { return hay.indexOf(t) >= 0; });
+    });
+    var k = sort.key, dir = sort.dir === "asc" ? 1 : -1;
+    list.sort(function (a, b) {
+      var va = k === "montant" ? num(a.montant) : (a[k] || ""), vb = k === "montant" ? num(b.montant) : (b[k] || "");
+      var ea = va === null || va === "", eb = vb === null || vb === "";
+      if (ea && eb) return 0; if (ea) return 1; if (eb) return -1;
+      return k === "montant" ? (va - vb) * dir : String(va).localeCompare(String(vb), "fr", { numeric: true }) * dir;
+    });
+    $("rows").innerHTML = list.map(function (d) { return rowHTML(d, true); }).join("");
+    $("footLbl").textContent = "Total · " + plural(list.length, "dossier");
+    $("footSum").textContent = eur.format(list.reduce(function (s, d) { return s + amt(d); }, 0));
+    $("empty").hidden = list.length > 0;
+    $("empty").textContent = !sc.ds.length ? "Aucun dossier pour cet exercice. Clique sur « + Dossier »." : "Aucun dossier ne correspond à ces filtres.";
+    document.querySelectorAll("th button[data-sort]").forEach(function (bt) { bt.setAttribute("aria-sort", bt.dataset.sort === sort.key ? (sort.dir === "asc" ? "ascending" : "descending") : "none"); });
+  }
+
+  function fillNames() {}
+  function traceHTML(x) {
+    return '<div>Encodé par ' + whoHTML(x.createdBy) + ' <span class="muted">le ' + esc(fmtStamp(x.createdAt)) + '</span></div>' +
+      (x.updatedAt && x.updatedAt !== x.createdAt ? '<div>Modifié par ' + whoHTML(x.updatedBy) + ' <span class="muted">le ' + esc(fmtStamp(x.updatedAt)) + '</span></div>' : '');
+  }
+
+  /* ---------- Fiche dossier ---------- */
+  function extraRow(label, value) {
+    var div = document.createElement("div"); div.className = "extra";
+    div.innerHTML = '<input class="xl" list="extraLabels" placeholder="Nom du champ" aria-label="Nom du champ"><input class="xv" placeholder="Valeur" aria-label="Valeur"><button class="btn small danger" type="button">Retirer</button>';
+    div.querySelector(".xl").value = label || ""; div.querySelector(".xv").value = value || "";
+    div.querySelector("button").addEventListener("click", function () { div.remove(); });
+    $("extras").appendChild(div); return div;
+  }
+  function fillCreditSelect(keep) {
+    var y = ($("date").value || "").slice(0, 4), sel = $("creditId");
+    var cs = credits.filter(function (c) { return String(c.annee) === y; });
+    var cur = keep !== undefined ? keep : sel.value;
+    var linked = cur && creditById(cur) && cs.indexOf(creditById(cur)) < 0 ? [creditById(cur)] : [];
+    sel.innerHTML = '<option value="">— Aucun crédit —</option>' + cs.concat(linked).map(function (c) {
+      var s = creditStats(c);
+      return '<option value="' + esc(c.id) + '">' + esc(creditLabel(c) + (c.catalogue ? " · cat. " + c.catalogue : "") + (String(c.annee) !== y ? " · " + c.annee : "") + " · reste " + eur0.format(s.left)) + '</option>';
+    }).join("");
+    sel.value = cur && creditById(cur) ? cur : "";
+  }
+  function updateLink() {
+    if (!manualCredit) {
+      var a = autoCredit(($("date").value || "").slice(0, 4), $("catalogue").value);
+      fillCreditSelect(a ? a.id : "");
+    } else fillCreditSelect();
+    var h = $("linkHint"), id = $("creditId").value, y = ($("date").value || "").slice(0, 4);
+    if (!id) {
+      var nb = credits.filter(function (c) { return String(c.annee) === y; }).length;
+      h.className = "linkhint bad";
+      h.textContent = nb ? "Ce dossier ne sera imputé sur aucun crédit. Choisis-en un dans la liste." : "Aucun crédit encodé pour " + (y || "cet exercice") + ". Encode d'abord un crédit pour que le dossier s'y lie.";
+      return;
+    }
+    var c = creditById(id), s = creditStats(c);
+    var prev = editingD && editingD.creditId === id ? amt(editingD) : 0;
+    var after = s.left + prev - (num($("montant").value) || 0);
+    h.className = "linkhint " + (after < 0 ? "bad" : "ok");
+    h.innerHTML = (manualCredit ? "Imputé sur " : "Lié automatiquement à ") + "<b>" + esc(creditLabel(c)) + "</b>. Après ce dossier : " + (after < 0 ? "dépassement de <b>" + esc(eur.format(-after)) + "</b>" : "<b>" + esc(eur.format(after)) + "</b> disponibles sur " + esc(eur.format(s.budget)) + ".");
+  }
+  function openDossier(d) {
+    editingD = d || null;
+    $("dTitle").textContent = d ? "Dossier " + d.numero : "Nouveau dossier";
+    var defDate = year && year !== CUR ? year + "-01-01" : NOW.toISOString().slice(0, 10);
+    $("numero").value = d ? d.numero || "" : "";
+    $("date").value = d ? d.date || "" : defDate;
+    $("firme").value = d ? d.firme || "" : "";
+    $("catalogue").value = d ? d.catalogue || "" : "";
+    $("montant").value = d && d.montant != null ? d.montant : "";
+    $("objet").value = d ? d.objet || "" : "";
+    $("notes").value = d ? d.notes || "" : "";
+    $("extras").innerHTML = ""; (d && d.extras || []).forEach(function (x) { extraRow(x.label, x.value); });
+    manualCredit = !!(d && d.creditId && creditById(d.creditId));
+    fillCreditSelect(d ? d.creditId || "" : "");
+    updateLink();
+    $("dTrace").hidden = !d; if (d) $("dTrace").innerHTML = traceHTML(d);
+    var ro = !canWrite;
+    $("dForm").querySelectorAll("input, textarea, select").forEach(function (i) { if (i.tagName === "SELECT") i.disabled = ro; else i.readOnly = ro; });
+    $("addExtra").hidden = ro; $("dSave").hidden = ro; $("dDel").hidden = ro || !d;
+    $("dConfirm").hidden = true; $("dErr").textContent = "";
+    $("dBack").hidden = false; fillNames();
+    setTimeout(function () { (d ? $("firme") : $("numero")).focus(); }, 0);
+  }
+  ["date", "catalogue", "montant"].forEach(function (id) { $(id).addEventListener("input", updateLink); });
+  $("creditId").addEventListener("change", function () { manualCredit = true; updateLink(); });
+  $("addExtra").addEventListener("click", function () { extraRow("", "").querySelector(".xl").focus(); });
+  $("dForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    var o = {
+      numero: $("numero").value.trim(), date: $("date").value, firme: $("firme").value.trim(), catalogue: $("catalogue").value.trim(),
+      montant: $("montant").value === "" ? null : num($("montant").value), creditId: $("creditId").value || null,
+      objet: $("objet").value.trim(), notes: $("notes").value.trim(),
+      extras: Array.prototype.map.call($("extras").children, function (r) { return { label: r.querySelector(".xl").value.trim(), value: r.querySelector(".xv").value.trim() }; }).filter(function (x) { return x.label || x.value; })
+    };
+    if (!o.numero || !o.date) { $("dErr").textContent = "Le numéro de dossier et la date sont obligatoires."; return; }
+    if (dossiers.some(function (d) { return (!editingD || d.id !== editingD.id) && norm(d.numero) === norm(o.numero); })) { $("dErr").textContent = "Le dossier " + o.numero + " existe déjà."; return; }
+    var now = Date.now();
+    o.createdAt = editingD && editingD.createdAt ? editingD.createdAt : now;
+    o.createdBy = editingD ? (editingD.createdBy || null) : meId;
+    o.updatedAt = now; o.updatedBy = meId;
+    $("dSave").disabled = true;
+    try {
+      if (dCol) await (editingD ? dCol.doc(editingD.id) : dCol.doc()).set(o);
+      else { o.id = editingD ? editingD.id : "local-" + now; dossiers = dossiers.filter(function (d) { return d.id !== o.id; }).concat([o]); render(); }
+      var c = o.creditId ? creditById(o.creditId) : null;
+      toast((editingD ? "Dossier modifié" : "Dossier ajouté") + (c ? " · imputé sur " + c.libelle : " · sans crédit"));
+      $("dBack").hidden = true; editingD = null;
+    } catch (err) { $("dErr").textContent = errMsg(err); }
+    finally { $("dSave").disabled = false; }
+  });
+  $("dDel").addEventListener("click", function () { $("dConfirm").hidden = false; $("dConfirmDel").focus(); });
+  $("dConfirmDel").addEventListener("click", async function () {
+    try { if (dCol) await dCol.doc(editingD.id).delete(); else dossiers = dossiers.filter(function (d) { return d.id !== editingD.id; }); toast("Dossier supprimé"); $("dBack").hidden = true; editingD = null; render(); }
+    catch (err) { $("dErr").textContent = errMsg(err); }
+  });
+
+  /* ---------- Fiche crédit ---------- */
+  function openCredit(c) {
+    editingC = c || null;
+    $("cTitle").textContent = c ? "Crédit · " + c.libelle : "Nouveau crédit";
+    $("cLibelle").value = c ? c.libelle || "" : "";
+    $("cAnnee").value = c ? c.annee || "" : (year || CUR);
+    $("cMontant").value = c && c.montant != null ? c.montant : "";
+    $("cRef").value = c ? c.reference || "" : "";
+    $("cCatalogue").value = c ? c.catalogue || "" : "";
+    $("cNotes").value = c ? c.notes || "" : "";
+    if (c) {
+      var ds = linkedTo(c), s = creditStats(c);
+      $("cLinked").innerHTML = '<div class="section-t" style="margin-bottom:8px">Dossiers imputés · ' + esc(eur.format(s.used)) + ' engagés · ' + esc(eur.format(s.left)) + ' disponibles</div>' + consumHTML(s.pct) +
+        (ds.length ? '<div class="mini-list" style="margin-top:10px"><table><thead><tr><th>N°</th><th>Date</th><th>Firme</th><th class="money">Montant</th></tr></thead><tbody>' +
+          ds.sort(function (a, b) { return (b.date || "").localeCompare(a.date || ""); }).map(function (d) { return '<tr><td class="num">' + esc(d.numero) + '</td><td class="date">' + esc(fmtDate(d.date)) + '</td><td>' + esc(d.firme || "—") + '</td><td class="money">' + esc(eur.format(amt(d))) + '</td></tr>'; }).join("") +
+          '</tbody></table></div>' : '<div class="muted" style="margin-top:8px">Aucun dossier imputé pour l\'instant.</div>');
+      $("cTrace").hidden = false; $("cTrace").innerHTML = traceHTML(c);
+    } else { $("cLinked").innerHTML = ""; $("cTrace").hidden = true; }
+    var ro = !canWrite;
+    $("cForm").querySelectorAll("input, textarea").forEach(function (i) { i.readOnly = ro; });
+    $("cSave").hidden = ro; $("cDel").hidden = ro || !c;
+    $("cConfirm").hidden = true; $("cErr").textContent = "";
+    $("cBack").hidden = false; fillNames();
+    setTimeout(function () { $("cLibelle").focus(); }, 0);
+  }
+  $("cForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    var o = { libelle: $("cLibelle").value.trim(), annee: $("cAnnee").value.trim(), montant: $("cMontant").value === "" ? null : num($("cMontant").value), reference: $("cRef").value.trim(), catalogue: $("cCatalogue").value.trim(), notes: $("cNotes").value.trim() };
+    if (!o.libelle || !/^\d{4}$/.test(o.annee) || o.montant == null) { $("cErr").textContent = "L'intitulé, l'exercice (4 chiffres) et le montant sont obligatoires."; return; }
+    var now = Date.now();
+    o.createdAt = editingC && editingC.createdAt ? editingC.createdAt : now;
+    o.createdBy = editingC ? (editingC.createdBy || null) : meId;
+    o.updatedAt = now; o.updatedBy = meId;
+    $("cSave").disabled = true;
+    try {
+      var ref = cCol ? (editingC ? cCol.doc(editingC.id) : cCol.doc()) : null, id = ref ? ref.id : (editingC ? editingC.id : "local-c" + now);
+      if (ref) await ref.set(o); else { o.id = id; credits = credits.filter(function (c) { return c.id !== id; }).concat([o]); }
+      var linkedN = await linkOrphans(id, o);
+      toast((editingC ? "Crédit modifié" : "Crédit ajouté") + (linkedN ? " · " + plural(linkedN, "dossier") + " lié" + (linkedN > 1 ? "s" : "") + " automatiquement" : ""));
+      $("cBack").hidden = true; editingC = null; render();
+    } catch (err) { $("cErr").textContent = errMsg(err); }
+    finally { $("cSave").disabled = false; }
+  });
+  $("cDel").addEventListener("click", function () {
+    var n = linkedTo(editingC).length;
+    $("cConfirmTxt").textContent = "Supprimer ce crédit ?" + (n ? " " + plural(n, "dossier") + " seront mis « sans crédit »." : "");
+    $("cConfirm").hidden = false; $("cConfirmDel").focus();
+  });
+  $("cConfirmDel").addEventListener("click", async function () {
+    try {
+      var ds = linkedTo(editingC);
+      for (var i = 0; i < ds.length; i++) { if (dCol) await dCol.doc(ds[i].id).update({ creditId: null, updatedAt: Date.now(), updatedBy: meId }); else ds[i].creditId = null; }
+      if (cCol) await cCol.doc(editingC.id).delete(); else credits = credits.filter(function (c) { return c.id !== editingC.id; });
+      toast("Crédit supprimé"); $("cBack").hidden = true; editingC = null; render();
+    } catch (err) { $("cErr").textContent = errMsg(err); }
+  });
+
+  /* ---------- Exercices ---------- */
+  async function linkOrphans(id, o) {
+    var match = dossiers.filter(function (d) { return isOrphan(d) && yearOf(d) === String(o.annee) && (!o.catalogue || norm(d.catalogue) === norm(o.catalogue)); });
+    if (!o.catalogue && credits.some(function (c) { return c.id !== id && String(c.annee) === String(o.annee) && !norm(c.catalogue); })) match = [];
+    for (var i = 0; i < match.length; i++) {
+      if (dCol) await dCol.doc(match[i].id).update({ creditId: id, updatedAt: Date.now(), updatedBy: meId }); else match[i].creditId = id;
+    }
+    return match.length;
+  }
+  async function copyCredits(from, to) {
+    var src = credits.filter(function (c) { return String(c.annee) === from; });
+    var exists = credits.filter(function (c) { return String(c.annee) === to; }).map(function (c) { return norm(c.libelle) + "|" + norm(c.catalogue); });
+    var n = 0, linked = 0;
+    for (var i = 0; i < src.length; i++) {
+      var c = src[i];
+      if (exists.indexOf(norm(c.libelle) + "|" + norm(c.catalogue)) >= 0) continue;
+      var now = Date.now();
+      var o = { libelle: c.libelle || "", annee: to, montant: num(c.montant) || 0, reference: c.reference || "", catalogue: c.catalogue || "", notes: "", createdAt: now, createdBy: meId, updatedAt: now, updatedBy: meId };
+      var id;
+      if (cCol) { var ref = cCol.doc(); id = ref.id; await ref.set(o); } else { id = "local-c" + now + i; o.id = id; credits = credits.concat([o]); }
+      credits = credits.filter(function (x) { return x.id !== id; }).concat([Object.assign({ id: id }, o)]);
+      linked += await linkOrphans(id, o);
+      n++;
+    }
+    return { n: n, linked: linked };
+  }
+  async function addYear(y) {
+    if (extraYears.indexOf(y) >= 0) return;
+    var r = await sb.from("mp_exercices").upsert({ annee: y });
+    if (r.error) throw r.error;
+    await reload();
+  }
+  $("newYearBtn").addEventListener("click", function () {
+    var ys = allYears(), next = String(Math.max.apply(null, ys.map(Number)) + (ys.indexOf(String(+CUR + 1)) >= 0 && !credits.some(function (c) { return String(c.annee) === String(+CUR + 1); }) ? 0 : 1));
+    $("yIn").value = next; $("yErr").textContent = ""; $("yCopy").checked = true;
+    updateYearDlg(); $("yBack").hidden = false; setTimeout(function () { $("yIn").focus(); }, 0);
+  });
+  function updateYearDlg() {
+    var y = $("yIn").value, prev = String(+y - 1);
+    var n = credits.filter(function (c) { return String(c.annee) === prev; }).length;
+    $("yCopyLbl").textContent = n ? "Reprendre " + (n > 1 ? "les " + plural(n, "crédit") : "le crédit") + " de " + prev : "Aucun crédit en " + prev + " à reprendre";
+    $("yCopy").disabled = !n; if (!n) $("yCopy").checked = false;
+    $("yCopyHint").hidden = !n;
+  }
+  $("yIn").addEventListener("input", updateYearDlg);
+  $("yForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    var y = $("yIn").value.trim();
+    if (!/^\d{4}$/.test(y)) { $("yErr").textContent = "Indique une année sur 4 chiffres."; return; }
+    $("ySave").disabled = true;
+    try {
+      await addYear(y);
+      var r = $("yCopy").checked ? await copyCredits(String(+y - 1), y) : null;
+      year = y; try { localStorage.setItem("mp-year", y); } catch (er) {}
+      $("yBack").hidden = true; render();
+      toast("Exercice " + y + " ouvert" + (r && r.n ? " · " + plural(r.n, "crédit") + " repris" : ""));
+    } catch (err) { $("yErr").textContent = errMsg(err); }
+    finally { $("ySave").disabled = false; }
+  });
+  $("rollBtn").addEventListener("click", async function () {
+    var b = $("rollBtn"); b.disabled = true;
+    try { var r = await copyCredits(String(+year - 1), year); render(); toast(plural(r.n, "crédit") + " repris pour " + year + (r.linked ? " · " + plural(r.linked, "dossier") + " lié" + (r.linked > 1 ? "s" : "") : "")); }
+    catch (err) { toast(errMsg(err)); }
+    finally { b.disabled = false; }
+  });
+
+  /* ---------- Fermeture des panneaux ---------- */
+  document.querySelectorAll("[data-close]").forEach(function (b) { b.addEventListener("click", function () { b.closest(".backdrop").hidden = true; editingD = editingC = null; }); });
+  document.querySelectorAll("[data-cancel-del]").forEach(function (b) { b.addEventListener("click", function () { b.closest(".confirm").hidden = true; }); });
+  document.querySelectorAll(".backdrop").forEach(function (bd) { bd.addEventListener("click", function (e) { if (e.target === bd) { bd.hidden = true; editingD = editingC = null; } }); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") document.querySelectorAll(".backdrop").forEach(function (bd) { if (!bd.hidden) { bd.hidden = true; editingD = editingC = null; } }); });
+
+  /* ---------- Écouteurs ---------- */
+  $("year").addEventListener("change", function () { year = $("year").value; try { localStorage.setItem("mp-year", year); } catch (e) {} render(); });
+  $("newDossierBtn").addEventListener("click", function () { openDossier(null); });
+  $("newCreditBtn").addEventListener("click", function () { openCredit(null); });
+  $("newCreditBtn2").addEventListener("click", function () { openCredit(null); });
+  $("q").addEventListener("input", render);
+  $("fCat").addEventListener("change", render);
+  $("fCredit").addEventListener("change", render);
+  document.querySelectorAll("th button[data-sort]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      if (sort.key === b.dataset.sort) sort.dir = sort.dir === "asc" ? "desc" : "asc";
+      else { sort.key = b.dataset.sort; sort.dir = (b.dataset.sort === "date" || b.dataset.sort === "montant") ? "desc" : "asc"; }
+      render();
+    });
+  });
+  function rowOpen(e) {
+    if (e.type === "keydown" && e.key !== "Enter") return;
+    var tr = e.target.closest("tr[data-id], tr[data-credit]"); if (!tr) return;
+    if (tr.dataset.id) { var d = dossiers.find(function (x) { return x.id === tr.dataset.id; }); if (d) openDossier(d); }
+    else { var c = creditById(tr.dataset.credit); if (c) openCredit(c); }
+  }
+  ["rows", "recent", "crRows", "watch"].forEach(function (id) { $(id).addEventListener("click", rowOpen); $(id).addEventListener("keydown", rowOpen); });
+
+  /* ---------- Thème personnel ---------- */
+  function applySkin(s) { if (s) document.documentElement.setAttribute("data-skin", s); else document.documentElement.removeAttribute("data-skin"); $("skin").value = s || ""; }
+  try { applySkin(localStorage.getItem("mp-skin") || ""); var ly = localStorage.getItem("mp-year"); if (ly !== null) year = ly; } catch (e) {}
+  $("skin").addEventListener("change", async function () {
+    var s = $("skin").value; applySkin(s); rebuildCharts();
+    try { localStorage.setItem("mp-skin", s); } catch (e) {}
+    if (prefsRef) { try { await prefsRef.set({ skin: s }); } catch (e) {} }
+    toast("Thème appliqué pour toi");
+  });
+  new MutationObserver(function (ms) { if (ms.some(function (m) { return m.attributeName === "data-theme"; })) rebuildCharts(); }).observe(document.documentElement, { attributes: true });
+  if (window.matchMedia) { try { window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", rebuildCharts); } catch (e) {} }
+
+  readHash(); render();
+
+  /* ---------- Données (Supabase) ---------- */
+  var CFG = window.MP_CONFIG || {};
+  var sb = null;
+  var MAP = {
+    dossiers: { table: "mp_dossiers", f: { numero: "numero", date: "date", firme: "firme", catalogue: "catalogue", montant: "montant", creditId: "credit_id", objet: "objet", notes: "notes", extras: "extras" } },
+    credits: { table: "mp_credits", f: { libelle: "libelle", annee: "annee", montant: "montant", reference: "reference", catalogue: "catalogue", notes: "notes" } }
+  };
+  function toRow(kind, o) { var r = {}, f = MAP[kind].f; Object.keys(f).forEach(function (k) { if (k in o) r[f[k]] = o[k] === undefined ? null : o[k]; }); return r; }
+  function fromRow(kind, r) {
+    var o = { id: r.id }, f = MAP[kind].f;
+    Object.keys(f).forEach(function (k) { o[k] = r[f[k]]; });
+    o.montant = r.montant == null ? null : Number(r.montant);
+    if (kind === "dossiers") { o.date = r.date || ""; o.extras = Array.isArray(r.extras) ? r.extras : []; o.creditId = r.credit_id || null; }
+    else o.annee = String(r.annee);
+    o.createdAt = r.created_at ? Date.parse(r.created_at) : null; o.createdBy = r.created_by || null;
+    o.updatedAt = r.updated_at ? Date.parse(r.updated_at) : null; o.updatedBy = r.updated_by || null;
+    return o;
+  }
+  function uuid() { return (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) { var r = Math.random() * 16 | 0; return (c === "x" ? r : (r & 3 | 8)).toString(16); }); }
+  // Même interface que la version précédente : col.doc(id).set / update / delete
+  function makeCol(kind) {
+    var t = MAP[kind].table;
+    return { doc: function (id) {
+      id = id || uuid();
+      return {
+        id: id,
+        set: async function (o) { var row = toRow(kind, o); row.id = id; var r = await sb.from(t).upsert(row); if (r.error) throw r.error; await reload(); },
+        update: async function (o) { var r = await sb.from(t).update(toRow(kind, o)).eq("id", id); if (r.error) throw r.error; await reload(); },
+        delete: async function () { var r = await sb.from(t).delete().eq("id", id); if (r.error) throw r.error; await reload(); }
+      };
+    } };
+  }
+  var loading = null;
+  async function reload() {
+    if (loading) return loading;
+    loading = (async function () {
+      var res = await Promise.all([
+        sb.from("mp_credits").select("*"), sb.from("mp_dossiers").select("*"),
+        sb.from("mp_exercices").select("annee"), sb.from("mp_profils").select("id, nom")
+      ]);
+      var bad = res.find(function (r) { return r.error; });
+      if (bad) { setStatus("Impossible de charger les données : " + bad.error.message, "err"); return; }
+      credits = res[0].data.map(function (r) { return fromRow("credits", r); });
+      dossiers = res[1].data.map(function (r) { return fromRow("dossiers", r); });
+      extraYears = res[2].data.map(function (r) { return String(r.annee); });
+      profils = {}; res[3].data.forEach(function (p) { profils[p.id] = p; });
+      setStatus("");
+      render();
+    })();
+    try { await loading; } finally { loading = null; }
+  }
+  var rtTimer = null;
+  function scheduleReload() { clearTimeout(rtTimer); rtTimer = setTimeout(reload, 300); }
+
+  /* ---------- Connexion ---------- */
+  var authMode = "login";
+  function setAuthMode(m) {
+    authMode = m;
+    $("authTabs").hidden = m === "reset";
+    $("authTabs").querySelectorAll("button").forEach(function (b) { b.classList.toggle("on", b.dataset.mode === m); });
+    $("fNom").hidden = m !== "signup";
+    $("fEmail").hidden = m === "reset";
+    $("fPass").querySelector("label").textContent = m === "reset" ? "Nouveau mot de passe" : "Mot de passe";
+    $("aPass").autocomplete = m === "login" ? "current-password" : "new-password";
+    $("authBtn").textContent = m === "signup" ? "Créer mon compte" : m === "reset" ? "Enregistrer le mot de passe" : "Se connecter";
+    $("forgotBtn").hidden = m !== "login";
+    authMsg("");
+  }
+  function authMsg(t, cls) { var m = $("authMsg"); m.textContent = t || ""; m.className = "authmsg" + (cls ? " " + cls : ""); }
+  $("authTabs").addEventListener("click", function (e) { var b = e.target.closest("[data-mode]"); if (b) setAuthMode(b.dataset.mode); });
+  $("forgotBtn").addEventListener("click", async function () {
+    var email = $("aEmail").value.trim();
+    if (!email) { authMsg("Indique ton adresse e-mail, puis clique à nouveau sur « Mot de passe oublié ».", "err"); return; }
+    var r = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname });
+    authMsg(r.error ? r.error.message : "Un e-mail de réinitialisation a été envoyé à " + email + ".", r.error ? "err" : "ok");
+  });
+  $("authForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    var email = $("aEmail").value.trim(), pass = $("aPass").value, r;
+    $("authBtn").disabled = true;
+    try {
+      if (authMode === "reset") {
+        if (pass.length < 6) { authMsg("Le mot de passe doit faire au moins 6 caractères.", "err"); return; }
+        r = await sb.auth.updateUser({ password: pass });
+        if (r.error) { authMsg(r.error.message, "err"); return; }
+        setAuthMode("login"); $("auth").hidden = true; toast("Mot de passe modifié"); await start(r.data.user);
+      } else if (authMode === "signup") {
+        var nom = $("aNom").value.trim();
+        if (!nom || !email || pass.length < 6) { authMsg("Indique ton nom, ton e-mail et un mot de passe d'au moins 6 caractères.", "err"); return; }
+        r = await sb.auth.signUp({ email: email, password: pass, options: { data: { nom: nom }, emailRedirectTo: location.origin + location.pathname } });
+        if (r.error) { authMsg(r.error.message, "err"); return; }
+        if (!r.data.session) authMsg("Compte créé. Confirme ton adresse via l'e-mail reçu, puis connecte-toi.", "ok");
+      } else {
+        r = await sb.auth.signInWithPassword({ email: email, password: pass });
+        if (r.error) { authMsg(r.error.message === "Invalid login credentials" ? "E-mail ou mot de passe incorrect." : r.error.message, "err"); return; }
+      }
+    } finally { $("authBtn").disabled = false; }
+  });
+  $("logoutBtn").addEventListener("click", async function () { await sb.auth.signOut(); location.reload(); });
+
+  var started = false;
+  async function start(user) {
+    if (!user || started) return;
+    started = true;
+    meId = user.id;
+    // Profil : création au premier passage, avec le nom donné à l'inscription
+    var p = await sb.from("mp_profils").select("*").eq("id", meId).maybeSingle();
+    var prof = p.data;
+    if (!prof) {
+      prof = { id: meId, nom: (user.user_metadata && user.user_metadata.nom) || (user.email || "").split("@")[0], theme: $("skin").value || "" };
+      await sb.from("mp_profils").insert(prof);
+    }
+    profils[meId] = prof;
+    if (typeof prof.theme === "string" && prof.theme !== $("skin").value) { applySkin(prof.theme); try { localStorage.setItem("mp-skin", prof.theme); } catch (e) {} rebuildCharts(); }
+    prefsRef = { set: async function (o) { await sb.from("mp_profils").update({ theme: o.skin }).eq("id", meId); } };
+    $("meIni").innerHTML = iniHTML(meId); $("meName").textContent = prof.nom || user.email; $("me").hidden = false;
+
+    var m = await sb.rpc("mp_est_membre");
+    if (m.error || !m.data) {
+      canWrite = false;
+      $("auth").hidden = true;
+      setStatus("Ton compte (" + user.email + ") n'est pas encore autorisé. Demande à l'administrateur d'ajouter cette adresse dans la table mp_membres de Supabase, puis recharge la page.", "err");
+      render(); return;
+    }
+    canWrite = true;
+    dCol = makeCol("dossiers"); cCol = makeCol("credits");
+    $("auth").hidden = true;
+    setStatus("Chargement…");
+    await reload();
+    sb.channel("mp-changes")
+      .on("postgres_changes", { event: "*", schema: "public", table: "mp_dossiers" }, scheduleReload)
+      .on("postgres_changes", { event: "*", schema: "public", table: "mp_credits" }, scheduleReload)
+      .on("postgres_changes", { event: "*", schema: "public", table: "mp_exercices" }, scheduleReload)
+      .subscribe();
+    window.addEventListener("focus", scheduleReload);
+  }
+
+  (async function init() {
+    if (!window.supabase || !CFG.supabaseUrl || /VOTRE/.test(CFG.supabaseUrl + CFG.supabaseAnonKey)) {
+      authMsg("Configuration manquante : renseigne l'adresse et la clé de ton projet dans config.js.", "err");
+      $("authBtn").disabled = true; return;
+    }
+    sb = window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseAnonKey);
+    setAuthMode("login");
+    sb.auth.onAuthStateChange(function (event, session) {
+      if (event === "PASSWORD_RECOVERY") { $("auth").hidden = false; setAuthMode("reset"); return; }
+      if (session && session.user && authMode !== "reset") { var u = session.user; setTimeout(function () { start(u); }, 0); }
+    });
+    var s0 = await sb.auth.getSession();
+    if (s0.data.session && authMode !== "reset") start(s0.data.session.user);
+  })();
+})();
+</script>
+</body>
+</html>
