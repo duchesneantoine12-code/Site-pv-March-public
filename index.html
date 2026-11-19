@@ -190,6 +190,7 @@ tfoot td { font-weight: 700; border-top: 1px solid var(--line); border-bottom: 0
 .panel .body { overflow-y: auto; padding: 18px 22px; display: grid; gap: 16px; align-content: start; }
 .panel footer { padding: 14px 22px; border-top: 1px solid var(--line); display: flex; gap: 8px; flex-wrap: wrap; background: var(--surface-2); }
 .panel footer .right { display: flex; gap: 8px; margin-left: auto; }
+#aForm.panel { width: min(740px, 100%); }
 .fgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .span2 { grid-column: 1 / -1; }
 .req { color: var(--danger); }
@@ -214,12 +215,45 @@ tfoot td { font-weight: 700; border-top: 1px solid var(--line); border-bottom: 0
 .dlg-acts { display: flex; justify-content: flex-end; gap: 8px; }
 .check { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; cursor: pointer; }
 .check input { width: auto; margin-top: 3px; }
+.segs { display: inline-flex; background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 3px; gap: 2px; flex-wrap: wrap; }
+.segs button { all: unset; cursor: pointer; padding: 5px 12px; border-radius: 6px; font-weight: 600; font-size: 13px; color: var(--muted); }
+.segs button.on { background: var(--surface); color: var(--ink); box-shadow: var(--shadow-sm); }
+.segs button:focus-visible { outline: 2px solid var(--fern); }
+.segs b { font-weight: 600; opacity: .7; margin-left: 4px; font-variant-numeric: tabular-nums; }
+.tick { all: unset; cursor: pointer; width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--sage); display: inline-grid; place-items: center; color: #fff; font-size: 12px; flex: none; }
+.tick:hover { border-color: var(--pine); }
+.tick.on { background: var(--pine); border-color: var(--pine); }
+.tick:focus-visible { outline: 2px solid var(--fern); outline-offset: 2px; }
+tr.done td { color: var(--muted); }
+tr.done .art { text-decoration: line-through; }
+.prio { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.prio i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.prio.urgent { color: var(--danger); } .prio.urgent i { background: var(--danger); }
+.prio.normal { color: var(--ink); } .prio.normal i { background: var(--fern); }
+.prio.plustard { color: var(--muted); } .prio.plustard i { background: var(--sage); }
+.st { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.st.afaire { background: var(--mint); color: var(--pine); }
+.st.encours { background: color-mix(in srgb, var(--warn) 12%, var(--surface)); color: var(--warn); }
+.st.fait { background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); }
+.late { color: var(--danger); font-weight: 600; }
+.soon { color: var(--warn); font-weight: 600; }
+.offers { display: grid; gap: 8px; }
+.offer { display: grid; grid-template-columns: 22px minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, .9fr) minmax(0, .9fr) auto; gap: 8px; align-items: center; padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.offer.kept { border-color: var(--pine); box-shadow: inset 3px 0 0 var(--pine); }
+.offer.best .om { border-color: var(--fern); }
+.offer input[type="radio"] { width: 18px; height: 18px; margin: 0; accent-color: var(--pine); }
+.offerhead { display: grid; grid-template-columns: 22px minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, .9fr) minmax(0, .9fr) auto; gap: 8px; font-size: 11.5px; color: var(--muted); font-weight: 600; padding: 0 9px; }
+.offersum { font-size: 13px; color: var(--muted); }
+.offersum b { color: var(--ink); }
+.contact a { color: var(--pine); text-decoration: none; }
+.contact a:hover { text-decoration: underline; }
+.badge2 { font-size: 11.5px; font-weight: 600; padding: 1px 7px; border-radius: 999px; background: color-mix(in srgb, var(--warn) 12%, var(--surface)); color: var(--warn); white-space: nowrap; }
+@media (max-width: 620px) { .offer, .offerhead { grid-template-columns: 22px 1fr 1fr; } .offerhead span:nth-child(n+4) { display: none; } .offer .od, .offer .or { grid-column: 2 / span 1; } }
 .auth { position: fixed; inset: 0; z-index: 30; background: linear-gradient(135deg, var(--side), var(--pine)); display: grid; place-items: center; padding: 16px; }
 .authcard { background: var(--surface); border-radius: 14px; box-shadow: var(--shadow); width: min(400px, 100%); padding: 28px; display: grid; gap: 14px; }
 .authcard .brand2 { display: flex; align-items: center; gap: 10px; }
 .authcard .brand2 .mark { width: 38px; height: 38px; border-radius: 9px; background: var(--lime); color: var(--side); display: grid; place-items: center; font-weight: 700; }
 .authcard h1 { margin: 0; font-size: 19px; color: var(--heading); }
-.authcard p { margin: 0; }
 .tabs2 { display: grid; grid-template-columns: 1fr 1fr; background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 3px; }
 .tabs2 button { all: unset; text-align: center; padding: 7px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13.5px; color: var(--muted); }
 .tabs2 button.on { background: var(--surface); color: var(--ink); box-shadow: var(--shadow-sm); }
@@ -275,6 +309,8 @@ tfoot td { font-weight: 700; border-top: 1px solid var(--line); border-bottom: 0
       <div class="navlabel">Menu</div>
       <button class="navitem" type="button" data-go="tableau"><span class="l"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 7.5 8 2.5l6 5V14H10V10H6v4H2z"/></svg>Tableau de bord</span></button>
       <button class="navitem" type="button" data-go="credits"><span class="l"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1.5" y="3.5" width="13" height="9" rx="1.5"/><path d="M1.5 6.5h13M4 10h3"/></svg>Crédits</span><span class="badge" id="bCredits">0</span></button>
+      <button class="navitem" type="button" data-go="achats"><span class="l"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5.5 4.5h8M5.5 8h8M5.5 11.5h8"/><path d="M2 4.5l.8.8L4 3.8M2 8l.8.8L4 7.3M2 11.5l.8.8L4 10.8"/></svg>À acheter</span><span class="badge" id="bAchats">0</span></button>
+      <button class="navitem" type="button" data-go="fournisseurs"><span class="l"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 6.5 3.2 3h9.6L14 6.5M2 6.5h12M2 6.5v7h12v-7M6 13.5V10h4v3.5"/></svg>Fournisseurs</span><span class="badge" id="bFourn">0</span></button>
       <button class="navitem" type="button" data-go="dossiers"><span class="l"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 3.5h4l1.5 1.5H14v8H2z"/></svg>Dossiers</span><span class="badge" id="bDossiers">0</span></button>
     </nav>
     <div class="sidefoot">
@@ -302,6 +338,7 @@ tfoot td { font-weight: 700; border-top: 1px solid var(--line); border-bottom: 0
       <div class="acts">
         <div class="yearsel"><label for="year">Exercice</label><select id="year"></select><button class="btn small" type="button" id="newYearBtn" title="Ouvrir un nouvel exercice">+ Exercice</button></div>
         <button class="btn" type="button" id="newCreditBtn">+ Crédit</button>
+        <button class="btn" type="button" id="newAchatBtn">+ À acheter</button>
         <button class="btn primary" type="button" id="newDossierBtn">+ Dossier</button>
       </div>
     </div>
@@ -364,6 +401,53 @@ tfoot td { font-weight: 700; border-top: 1px solid var(--line); border-bottom: 0
             <tbody id="crRows"></tbody>
             <tfoot><tr><td colspan="3">Total</td><td class="money" id="crfTotal"></td><td class="money" id="crfUsed"></td><td class="money" id="crfLeft"></td><td id="crfPct"></td><td class="money" id="crfN"></td></tr></tfoot>
           </table></div>
+        </div>
+      </section>
+
+      <!-- À ACHETER -->
+      <section id="vAchats" style="display:grid;gap:18px" hidden>
+        <div class="kpis">
+          <div class="card kpi"><div class="k">Reste à acheter</div><div class="v" id="akCount">0</div><div class="s" id="akCountSub"></div></div>
+          <div class="card kpi"><div class="k">Montant estimé restant</div><div class="v" id="akAmount">0 €</div><div class="s" id="akAmountSub"></div></div>
+          <div class="card kpi"><div class="k">Crédit après achats prévus</div><div class="v" id="akAfter">—</div><div class="bar" id="akBar"><i></i></div><div class="s" id="akAfterSub"></div></div>
+          <div class="card kpi"><div class="k">Urgents</div><div class="v" id="akUrgent">0</div><div class="s" id="akUrgentSub"></div></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><div><h2>Liste des achats</h2><p>Coche un achat quand il est fait, ou transforme-le en dossier</p></div>
+            <div class="segs" id="aSegs" role="tablist" aria-label="Statut">
+              <button type="button" data-st="ouverts" class="on">À faire<b id="sgOpen"></b></button>
+              <button type="button" data-st="encours">En cours<b id="sgRun"></b></button>
+              <button type="button" data-st="fait">Faits<b id="sgDone"></b></button>
+              <button type="button" data-st="tous">Tous<b id="sgAll"></b></button>
+            </div></div>
+          <div class="toolbar">
+            <div class="field" style="flex:2 1 240px"><label for="aq">Rechercher</label><input id="aq" type="search" placeholder="Article, fournisseur, notes…" autocomplete="off"></div>
+            <div class="field"><label for="afCat">Catalogue</label><select id="afCat"></select></div>
+            <div class="field"><label for="afPrio">Priorité</label><select id="afPrio"><option value="">Toutes</option><option value="urgent">Urgent</option><option value="normal">Normal</option><option value="plustard">Plus tard</option></select></div>
+            <button class="btn primary" type="button" id="newAchatBtn2">+ Ajouter un achat</button>
+          </div>
+          <div class="tablewrap"><table>
+            <thead><tr><th style="width:36px"></th><th>Article</th><th>Priorité</th><th>Pour le</th><th>Catalogue</th><th>Crédit prévu</th><th class="money">Estimé</th><th>Statut</th><th></th></tr></thead>
+            <tbody id="aRows"></tbody>
+            <tfoot><tr><td></td><td colspan="5" id="aFootLbl">Total</td><td class="money" id="aFootSum"></td><td colspan="2"></td></tr></tfoot>
+          </table></div>
+          <div class="empty" id="aEmpty" hidden></div>
+        </div>
+      </section>
+
+      <!-- FOURNISSEURS -->
+      <section id="vFournisseurs" style="display:grid;gap:18px" hidden>
+        <div class="card">
+          <div class="card-h"><div><h2>Carnet des fournisseurs</h2><p id="fSub">Coordonnées, dossiers passés et offres en cours</p></div><button class="btn primary small" type="button" id="newFournBtn">+ Nouveau fournisseur</button></div>
+          <div class="toolbar">
+            <div class="field" style="flex:2 1 240px"><label for="fq">Rechercher</label><input id="fq" type="search" placeholder="Nom, contact, catalogue, TVA…" autocomplete="off"></div>
+            <div class="field"><label for="fShow">Afficher</label><select id="fShow"><option value="">Tous</option><option value="carnet">Dans le carnet</option><option value="hors">Pas encore dans le carnet</option></select></div>
+          </div>
+          <div class="tablewrap"><table>
+            <thead><tr><th>Fournisseur</th><th>Contact</th><th>Catalogues</th><th class="money">Dossiers</th><th class="money">Commandé <span class="yr2"></span></th><th class="money">Offres en cours</th></tr></thead>
+            <tbody id="fRows"></tbody>
+          </table></div>
+          <div class="empty" id="fEmpty" hidden></div>
         </div>
       </section>
 
@@ -435,6 +519,69 @@ tfoot td { font-weight: 700; border-top: 1px solid var(--line); border-bottom: 0
   </form>
 </div>
 
+<!-- FICHE ACHAT -->
+<div class="backdrop" id="aBack" hidden>
+  <form class="panel" id="aForm" role="dialog" aria-modal="true" aria-labelledby="aTitle" novalidate>
+    <header><h2 id="aTitle">Nouvel achat</h2><button class="btn small" type="button" data-close>Fermer</button></header>
+    <div class="body">
+      <div class="fgrid">
+        <div class="field span2"><label for="aArticle">Que faut-il acheter ? <span class="req">*</span></label><input id="aArticle" required autocomplete="off" placeholder="ex. 10 chaises de bureau"></div>
+        <div class="field"><label for="aQte">Quantité</label><input id="aQte" type="number" min="0" step="1" class="tn"></div>
+        <div class="field"><label for="aEstime">Montant estimé (€)</label><input id="aEstime" type="number" min="0" step="0.01" inputmode="decimal" class="tn"></div>
+        <div class="field"><label for="aPrio">Priorité</label><select id="aPrio"><option value="urgent">Urgent</option><option value="normal">Normal</option><option value="plustard">Plus tard</option></select></div>
+        <div class="field"><label for="aPour">À acheter pour le</label><input id="aPour" type="date"></div>
+        <div class="field"><label for="aAnnee">Exercice</label><input id="aAnnee" type="number" min="2000" max="2100" step="1" class="tn"></div>
+        <div class="field"><label for="aStatut">Statut</label><select id="aStatut"><option value="afaire">À faire</option><option value="encours">En cours (devis, demande…)</option><option value="fait">Fait</option></select></div>
+        <div class="field"><label for="aCatalogue">Catalogue</label><input id="aCatalogue" list="catsList" autocomplete="off"></div>
+        <div class="field"><label for="aFournisseur">Fournisseur retenu</label><input id="aFournisseur" list="firmesList" autocomplete="off"></div>
+        <div class="field"><label for="aService">Service demandeur</label><input id="aService" list="servicesList" autocomplete="off"></div>
+        <div class="field"><label for="aRef">Référence / lien du produit</label><input id="aRef" autocomplete="off" placeholder="Réf. catalogue, URL…"></div>
+      </div>
+      <div class="section-t">Offres des fournisseurs</div>
+      <div class="offers">
+        <div class="offerhead" id="offerHead" hidden><span></span><span>Fournisseur</span><span>Montant (€)</span><span>Délai</span><span>Réf. devis</span><span></span></div>
+        <div id="offers" class="offers"></div>
+        <div><button class="btn small" type="button" id="addOffer">+ Ajouter une offre</button></div>
+        <div class="offersum" id="offerSum">Ajoute les prix demandés à plusieurs fournisseurs, puis coche l'offre retenue : le fournisseur et le montant estimé se remplissent tout seuls.</div>
+      </div>
+      <div class="linkbox">
+        <div class="field"><label for="aCredit">Crédit prévu</label><select id="aCredit"></select></div>
+        <div class="linkhint" id="aLinkHint"></div>
+      </div>
+      <div class="field"><label for="aNotes">Notes</label><textarea id="aNotes" placeholder="Référence produit, lien, contact, remarques…"></textarea></div>
+      <div class="trace" id="aTrace" hidden></div>
+      <div class="confirm" id="aConfirm" hidden><span>Supprimer cet achat de la liste ?</span><button class="btn danger solid small" type="button" id="aConfirmDel">Oui, supprimer</button><button class="btn small" type="button" data-cancel-del>Non</button></div>
+      <div class="formerr" id="aErr" role="alert"></div>
+    </div>
+    <footer><button class="btn danger" type="button" id="aDel">Supprimer</button><div class="right"><button class="btn" type="button" data-close>Annuler</button><button class="btn" type="button" id="aToDossier">Créer le dossier</button><button class="btn primary" type="submit" id="aSave">Enregistrer</button></div></footer>
+  </form>
+</div>
+
+<!-- FICHE FOURNISSEUR -->
+<div class="backdrop" id="fBack" hidden>
+  <form class="panel" id="fForm" role="dialog" aria-modal="true" aria-labelledby="fTitle" novalidate>
+    <header><h2 id="fTitle">Nouveau fournisseur</h2><button class="btn small" type="button" data-close>Fermer</button></header>
+    <div class="body">
+      <div class="fgrid">
+        <div class="field span2"><label for="fNom">Nom de la firme <span class="req">*</span></label><input id="fNom" required autocomplete="off"></div>
+        <div class="field"><label for="fContact">Personne de contact</label><input id="fContact" autocomplete="off"></div>
+        <div class="field"><label for="fTel">Téléphone</label><input id="fTel" type="tel" autocomplete="off"></div>
+        <div class="field"><label for="fMail">E-mail</label><input id="fMail" type="email" autocomplete="off"></div>
+        <div class="field"><label for="fWeb">Site web</label><input id="fWeb" autocomplete="off" placeholder="www…"></div>
+        <div class="field span2"><label for="fAdr">Adresse</label><input id="fAdr" autocomplete="off"></div>
+        <div class="field"><label for="fTva">N° TVA / BCE</label><input id="fTva" autocomplete="off" placeholder="BE0…"></div>
+        <div class="field"><label for="fCats">Catalogues / domaines</label><input id="fCats" autocomplete="off" placeholder="ex. 240, 256, mobilier"></div>
+        <div class="field span2"><label for="fNotes">Notes</label><textarea id="fNotes" style="min-height:70px" placeholder="Conditions, délais habituels, remarques…"></textarea></div>
+      </div>
+      <div id="fHist"></div>
+      <div class="trace" id="fTrace" hidden></div>
+      <div class="confirm" id="fConfirm" hidden><span>Retirer ce fournisseur du carnet ? Ses dossiers restent intacts.</span><button class="btn danger solid small" type="button" id="fConfirmDel">Oui, retirer</button><button class="btn small" type="button" data-cancel-del>Non</button></div>
+      <div class="formerr" id="fErr" role="alert"></div>
+    </div>
+    <footer><button class="btn danger" type="button" id="fDel">Retirer</button><div class="right"><button class="btn" type="button" data-close>Annuler</button><button class="btn primary" type="submit" id="fSave">Enregistrer</button></div></footer>
+  </form>
+</div>
+
 <!-- FICHE CRÉDIT -->
 <div class="backdrop" id="cBack" hidden>
   <form class="panel" id="cForm" role="dialog" aria-modal="true" aria-labelledby="cTitle" novalidate>
@@ -461,6 +608,7 @@ tfoot td { font-weight: 700; border-top: 1px solid var(--line); border-bottom: 0
 <datalist id="firmesList"></datalist>
 <datalist id="catsList"></datalist>
 <datalist id="extraLabels"></datalist>
+<datalist id="servicesList"></datalist>
 <div class="toast" id="toast" hidden></div>
 
 <script>
@@ -474,6 +622,8 @@ tfoot td { font-weight: 700; border-top: 1px solid var(--line); border-bottom: 0
   var NOW = new Date(), CUR = String(NOW.getFullYear());
 
   var dCol = null, cCol = null, prefsRef = null, userApi = null, meId = null, canWrite = true;
+  var fournisseurs = [], fCol = null, editingF = null;
+  var achats = [], aCol = null, aFilter = "ouverts", fromAchat = null;
   var dossiers = [], credits = [], extraYears = [], settingsRef = null, settingsData = {};
   var view = "tableau", year = CUR;
   var editingD = null, editingC = null, manualCredit = false;
@@ -616,7 +766,7 @@ tfoot td { font-weight: 700; border-top: 1px solid var(--line); border-bottom: 0
   }
 
   /* ---------- Navigation ---------- */
-  var VIEWS = { tableau: "Tableau de bord", credits: "Crédits", dossiers: "Dossiers" };
+  var VIEWS = { tableau: "Tableau de bord", credits: "Crédits", achats: "À acheter", fournisseurs: "Fournisseurs", dossiers: "Dossiers" };
   function go(v) {
     view = VIEWS[v] ? v : "tableau";
     if (location.hash.slice(1) !== view) { try { history.replaceState(null, "", "#" + view); } catch (e) { location.hash = view; } }
@@ -632,10 +782,13 @@ tfoot td { font-weight: 700; border-top: 1px solid var(--line); border-bottom: 0
     ysel.innerHTML = ys.map(function (y) { return '<option value="' + y + '">' + y + '</option>'; }).join("") + '<option value="">Toutes</option>';
     ysel.value = year === "" || ys.indexOf(year) >= 0 ? year : CUR;
     document.querySelectorAll(".navitem[data-go]").forEach(function (b) { b.classList.toggle("on", b.dataset.go === view); });
-    ["tableau", "credits", "dossiers"].forEach(function (v) { $("v" + v.charAt(0).toUpperCase() + v.slice(1)).hidden = view !== v; });
+    ["tableau", "credits", "achats", "fournisseurs", "dossiers"].forEach(function (v) { $("v" + v.charAt(0).toUpperCase() + v.slice(1)).hidden = view !== v; });
     $("pageTitle").textContent = VIEWS[view];
     $("crumb").textContent = "Marchés publics · " + (year ? "exercice " + year : "toutes années");
-    $("newCreditBtn").hidden = $("newDossierBtn").hidden = $("newCreditBtn2").hidden = $("newYearBtn").hidden = !canWrite;
+    $("newCreditBtn").hidden = $("newDossierBtn").hidden = $("newCreditBtn2").hidden = $("newYearBtn").hidden = $("newAchatBtn2").hidden = !canWrite;
+    $("newAchatBtn").hidden = !canWrite || view !== "achats";
+    document.querySelectorAll(".yr2").forEach(function (e) { e.textContent = year || ""; });
+    $("newCreditBtn").hidden = !canWrite || view === "achats";
 
     var sc = scope();
     $("bCredits").textContent = sc.cs.length;
@@ -643,7 +796,10 @@ tfoot td { font-weight: 700; border-top: 1px solid var(--line); border-bottom: 0
     $("bDossiers").classList.toggle("warn", sc.orphans.length > 0);
     $("bDossiers").title = sc.orphans.length ? plural(sc.orphans.length, "dossier") + " sans crédit" : "";
 
-    $("firmesList").innerHTML = uniq(dossiers.map(function (d) { return (d.firme || "").trim(); })).map(opt).join("");
+    $("firmesList").innerHTML = allSupplierNames().map(opt).join("");
+    $("servicesList").innerHTML = uniq(achats.map(function (a) { return (a.service || "").trim(); })).map(opt).join("");
+    $("bFourn").textContent = fournisseurs.length;
+    $("newFournBtn").hidden = !canWrite;
     $("catsList").innerHTML = uniq(dossiers.map(function (d) { return (d.catalogue || "").trim(); }).concat(credits.map(function (c) { return (c.catalogue || "").trim(); }))).map(opt).join("");
     var labels = []; dossiers.forEach(function (d) { (d.extras || []).forEach(function (x) { labels.push((x.label || "").trim()); }); });
     $("extraLabels").innerHTML = uniq(labels).map(opt).join("");
@@ -656,7 +812,10 @@ tfoot td { font-weight: 700; border-top: 1px solid var(--line); border-bottom: 0
       $("rollTxt").textContent = "Aucun crédit encodé pour " + year + ". Tu peux reprendre " + (prevCredits.length > 1 ? "les " + plural(prevCredits.length, "crédit") : "le crédit") + " de " + prevY + " et ajuster les montants ensuite.";
       $("rollBtn").textContent = "Reprendre les crédits de " + prevY;
     }
-    if (view === "tableau") renderTableau(sc, ys); else if (view === "credits") renderCredits(sc); else renderDossiers(sc);
+    var openA = achatsScope().filter(function (a) { return a.statut !== "fait"; });
+    $("bAchats").textContent = openA.length;
+    $("bAchats").classList.toggle("warn", openA.some(function (a) { return a.priorite === "urgent"; }));
+    if (view === "tableau") renderTableau(sc, ys); else if (view === "credits") renderCredits(sc); else if (view === "achats") renderAchats(sc); else if (view === "fournisseurs") renderFournisseurs(); else renderDossiers(sc);
     fillNames();
   }
 
@@ -827,8 +986,8 @@ tfoot td { font-weight: 700; border-top: 1px solid var(--line); border-bottom: 0
     h.className = "linkhint " + (after < 0 ? "bad" : "ok");
     h.innerHTML = (manualCredit ? "Imputé sur " : "Lié automatiquement à ") + "<b>" + esc(creditLabel(c)) + "</b>. Après ce dossier : " + (after < 0 ? "dépassement de <b>" + esc(eur.format(-after)) + "</b>" : "<b>" + esc(eur.format(after)) + "</b> disponibles sur " + esc(eur.format(s.budget)) + ".");
   }
-  function openDossier(d) {
-    editingD = d || null;
+  function openDossier(d, pre) {
+    editingD = d || null; fromAchat = pre ? pre.achatId : null;
     $("dTitle").textContent = d ? "Dossier " + d.numero : "Nouveau dossier";
     var defDate = year && year !== CUR ? year + "-01-01" : NOW.toISOString().slice(0, 10);
     $("numero").value = d ? d.numero || "" : "";
@@ -839,8 +998,10 @@ tfoot td { font-weight: 700; border-top: 1px solid var(--line); border-bottom: 0
     $("objet").value = d ? d.objet || "" : "";
     $("notes").value = d ? d.notes || "" : "";
     $("extras").innerHTML = ""; (d && d.extras || []).forEach(function (x) { extraRow(x.label, x.value); });
-    manualCredit = !!(d && d.creditId && creditById(d.creditId));
-    fillCreditSelect(d ? d.creditId || "" : "");
+    if (pre) { (pre.extras || []).forEach(function (x) { extraRow(x.label, x.value); }); $("firme").value = pre.firme || ""; $("catalogue").value = pre.catalogue || ""; $("montant").value = pre.montant != null ? pre.montant : ""; $("objet").value = pre.objet || ""; $("notes").value = pre.notes || ""; }
+    manualCredit = !!(d && d.creditId && creditById(d.creditId)) || !!(pre && pre.creditId && creditById(pre.creditId));
+    fillCreditSelect(d ? d.creditId || "" : (pre && pre.creditId) || "");
+    if (pre) $("dTitle").textContent = "Nouveau dossier · depuis la liste d'achats";
     updateLink();
     $("dTrace").hidden = !d; if (d) $("dTrace").innerHTML = traceHTML(d);
     var ro = !canWrite;
@@ -869,8 +1030,14 @@ tfoot td { font-weight: 700; border-top: 1px solid var(--line); border-bottom: 0
     o.updatedAt = now; o.updatedBy = meId;
     $("dSave").disabled = true;
     try {
-      if (dCol) await (editingD ? dCol.doc(editingD.id) : dCol.doc()).set(o);
-      else { o.id = editingD ? editingD.id : "local-" + now; dossiers = dossiers.filter(function (d) { return d.id !== o.id; }).concat([o]); render(); }
+      var dref = dCol ? (editingD ? dCol.doc(editingD.id) : dCol.doc()) : null, newId = dref ? dref.id : (editingD ? editingD.id : "local-" + now);
+      if (dref) await dref.set(o);
+      else { o.id = newId; dossiers = dossiers.filter(function (d) { return d.id !== o.id; }).concat([o]); render(); }
+      if (fromAchat && !editingD) {
+        var ach = achats.find(function (a) { return a.id === fromAchat; });
+        if (ach) { if (aCol) await aCol.doc(ach.id).update({ statut: "fait", dossierId: newId, updatedAt: Date.now(), updatedBy: meId }); else { ach.statut = "fait"; ach.dossierId = newId; } }
+        fromAchat = null;
+      }
       var c = o.creditId ? creditById(o.creditId) : null;
       toast((editingD ? "Dossier modifié" : "Dossier ajouté") + (c ? " · imputé sur " + c.libelle : " · sans crédit"));
       $("dBack").hidden = true; editingD = null;
@@ -895,7 +1062,8 @@ tfoot td { font-weight: 700; border-top: 1px solid var(--line); border-bottom: 0
     $("cNotes").value = c ? c.notes || "" : "";
     if (c) {
       var ds = linkedTo(c), s = creditStats(c);
-      $("cLinked").innerHTML = '<div class="section-t" style="margin-bottom:8px">Dossiers imputés · ' + esc(eur.format(s.used)) + ' engagés · ' + esc(eur.format(s.left)) + ' disponibles</div>' + consumHTML(s.pct) +
+      var pl = plannedOn(c.id);
+      $("cLinked").innerHTML = '<div class="section-t" style="margin-bottom:8px">Dossiers imputés · ' + esc(eur.format(s.used)) + ' engagés · ' + esc(eur.format(s.left)) + ' disponibles' + (pl ? ' · ' + esc(eur.format(pl)) + ' d\'achats prévus' : '') + '</div>' + consumHTML(s.pct) +
         (ds.length ? '<div class="mini-list" style="margin-top:10px"><table><thead><tr><th>N°</th><th>Date</th><th>Firme</th><th class="money">Montant</th></tr></thead><tbody>' +
           ds.sort(function (a, b) { return (b.date || "").localeCompare(a.date || ""); }).map(function (d) { return '<tr><td class="num">' + esc(d.numero) + '</td><td class="date">' + esc(fmtDate(d.date)) + '</td><td>' + esc(d.firme || "—") + '</td><td class="money">' + esc(eur.format(amt(d))) + '</td></tr>'; }).join("") +
           '</tbody></table></div>' : '<div class="muted" style="margin-top:8px">Aucun dossier imputé pour l\'instant.</div>');
@@ -1006,11 +1174,350 @@ tfoot td { font-weight: 700; border-top: 1px solid var(--line); border-bottom: 0
     finally { b.disabled = false; }
   });
 
+  /* ---------- À acheter ---------- */
+  var PRIO = { urgent: "Urgent", normal: "Normal", plustard: "Plus tard" }, PRIO_ORD = { urgent: 0, normal: 1, plustard: 2 };
+  var STAT = { afaire: "À faire", encours: "En cours", fait: "Fait" };
+  var editingA = null, aManualCredit = false;
+  function achatsScope() { return achats.filter(function (a) { return inYear(String(a.annee || "")); }); }
+  function plannedOn(cid) { return achats.filter(function (a) { return a.creditId === cid && a.statut !== "fait"; }).reduce(function (s, a) { return s + (num(a.estime) || 0); }, 0); }
+  function dueHTML(a) {
+    if (!a.pour) return '<span class="muted">—</span>';
+    var days = Math.round((new Date(a.pour + "T00:00:00") - new Date(NOW.toISOString().slice(0, 10) + "T00:00:00")) / 864e5);
+    var cls = a.statut === "fait" ? "" : days < 0 ? "late" : days <= 14 ? "soon" : "";
+    return '<span class="date ' + cls + '">' + esc(fmtDate(a.pour)) + '</span>' + (cls === "late" ? '<span class="sub late">en retard</span>' : cls === "soon" ? '<span class="sub soon">dans ' + plural(days, "jour") + '</span>' : '');
+  }
+  function renderAchats(sc) {
+    var all = achatsScope();
+    var open = all.filter(function (a) { return a.statut !== "fait"; });
+    var est = open.reduce(function (s, a) { return s + (num(a.estime) || 0); }, 0);
+    var urg = open.filter(function (a) { return a.priorite === "urgent"; });
+    $("akCount").textContent = open.length;
+    $("akCountSub").textContent = plural(open.filter(function (a) { return a.statut === "encours"; }).length, "achat") + " en cours · " + plural(all.length - open.length, "fait");
+    $("akAmount").textContent = eur0.format(est);
+    var noEst = open.filter(function (a) { return num(a.estime) == null; }).length;
+    $("akAmountSub").textContent = noEst ? plural(noEst, "achat") + " sans estimation" : "tous les achats sont estimés";
+    if (sc.total) {
+      var after = sc.left - est, p = (sc.usedOn + est) / sc.total * 100;
+      $("akAfter").textContent = eur0.format(after); $("akAfter").classList.toggle("neg", after < 0);
+      setBar($("akBar"), p);
+      $("akAfterSub").textContent = eur0.format(sc.left) + " disponibles − " + eur0.format(est) + " prévus";
+    } else { $("akAfter").textContent = "—"; $("akAfter").classList.remove("neg"); setBar($("akBar"), null); $("akAfterSub").textContent = "Encode tes crédits pour voir ce qui restera"; }
+    $("akUrgent").textContent = urg.length; $("akUrgent").classList.toggle("neg", urg.length > 0);
+    var late = open.filter(function (a) { return a.pour && a.pour < NOW.toISOString().slice(0, 10); }).length;
+    $("akUrgentSub").textContent = late ? plural(late, "achat") + " en retard" : "aucun retard";
+
+    $("sgOpen").textContent = open.length;
+    $("sgRun").textContent = all.filter(function (a) { return a.statut === "encours"; }).length;
+    $("sgDone").textContent = all.length - open.length;
+    $("sgAll").textContent = all.length;
+    $("aSegs").querySelectorAll("button").forEach(function (b) { b.classList.toggle("on", b.dataset.st === aFilter); });
+
+    var cats = uniq(all.map(catOf)), fc = $("afCat"), cur = fc.value;
+    fc.innerHTML = '<option value="">Tous</option>' + cats.map(function (c) { return '<option value="' + esc(c) + '">' + esc(c) + '</option>'; }).join("");
+    fc.value = cats.indexOf(cur) >= 0 ? cur : "";
+    var fp = $("afPrio").value, terms = norm($("aq").value).split(/\s+/).filter(Boolean);
+    var list = all.filter(function (a) {
+      if (aFilter === "ouverts" && a.statut === "fait") return false;
+      if (aFilter === "encours" && a.statut !== "encours") return false;
+      if (aFilter === "fait" && a.statut !== "fait") return false;
+      if (fc.value && catOf(a) !== fc.value) return false;
+      if (fp && a.priorite !== fp) return false;
+      var hay = norm([a.article, a.fournisseur, a.catalogue, a.notes, a.service, a.reference].concat((a.offres || []).map(function (o) { return o.fournisseur; })).join(" "));
+      return terms.every(function (t) { return hay.indexOf(t) >= 0; });
+    }).sort(function (x, y) {
+      return (x.statut === "fait") - (y.statut === "fait") || (PRIO_ORD[x.priorite] || 1) - (PRIO_ORD[y.priorite] || 1) || (x.pour || "9999").localeCompare(y.pour || "9999") || (x.article || "").localeCompare(y.article || "", "fr");
+    });
+    $("aRows").innerHTML = list.map(function (a) {
+      var c = a.creditId ? creditById(a.creditId) : null, e = num(a.estime);
+      var dos = a.dossierId ? dossiers.find(function (d) { return d.id === a.dossierId; }) : null;
+      return '<tr class="click' + (a.statut === "fait" ? ' done' : '') + '" tabindex="0" data-achat="' + esc(a.id) + '">' +
+        '<td><button type="button" class="tick' + (a.statut === "fait" ? ' on' : '') + '" data-tick="' + esc(a.id) + '" aria-label="' + (a.statut === "fait" ? "Remettre à faire" : "Marquer comme fait") + '"' + (canWrite ? '' : ' disabled') + '>' + (a.statut === "fait" ? "✓" : "") + '</button></td>' +
+        '<td><span class="art"><b>' + esc(a.article) + '</b></span>' + (num(a.quantite) ? ' <span class="muted">× ' + esc(a.quantite) + '</span>' : '') + '<span class="sub">' + esc([a.fournisseur, a.service, offersLine(a), dos ? "dossier " + dos.numero : ""].filter(Boolean).join(" · ")) + '</span></td>' +
+        '<td><span class="prio ' + esc(a.priorite || "normal") + '"><i></i>' + esc(PRIO[a.priorite] || "Normal") + '</span></td>' +
+        '<td>' + dueHTML(a) + '</td>' +
+        '<td>' + ((a.catalogue || "").trim() ? '<span class="tag">' + esc(a.catalogue.trim()) + '</span>' : '<span class="muted">—</span>') + '</td>' +
+        '<td>' + (c ? '<span class="tag cr">' + esc(c.libelle) + '</span>' : '<span class="muted">—</span>') + '</td>' +
+        '<td class="money">' + (e != null ? esc(eur.format(e)) : '<span class="muted">—</span>') + '</td>' +
+        '<td><span class="st ' + esc(a.statut) + '">' + esc(STAT[a.statut] || "") + '</span></td>' +
+        '<td>' + (canWrite && a.statut !== "fait" ? '<button class="btn small" type="button" data-todossier="' + esc(a.id) + '">→ Dossier</button>' : '') + '</td></tr>';
+    }).join("");
+    $("aFootLbl").textContent = "Total · " + plural(list.length, "achat");
+    $("aFootSum").textContent = eur.format(list.reduce(function (s, a) { return s + (num(a.estime) || 0); }, 0));
+    $("aEmpty").hidden = list.length > 0;
+    $("aEmpty").textContent = !all.length ? "Ta liste est vide. Clique sur « + Ajouter un achat » pour noter ce que tu dois acheter." : aFilter === "ouverts" ? "Plus rien à faire dans cette sélection." : "Aucun achat ne correspond.";
+  }
+  function fillAchatCredit(keep) {
+    var y = $("aAnnee").value, sel = $("aCredit");
+    var cs = credits.filter(function (c) { return String(c.annee) === y; });
+    sel.innerHTML = '<option value="">— À définir —</option>' + cs.map(function (c) { var s = creditStats(c); return '<option value="' + esc(c.id) + '">' + esc(creditLabel(c) + (c.catalogue ? " · cat. " + c.catalogue : "") + " · reste " + eur0.format(s.left)) + '</option>'; }).join("");
+    sel.value = keep && creditById(keep) ? keep : "";
+  }
+  function updateAchatLink() {
+    if (!aManualCredit) { var c0 = autoCredit($("aAnnee").value, $("aCatalogue").value); fillAchatCredit(c0 ? c0.id : ""); } else fillAchatCredit($("aCredit").value);
+    var id = $("aCredit").value, h = $("aLinkHint");
+    if (!id) { h.className = "linkhint"; h.textContent = "Aucun crédit choisi. Il sera proposé quand tu créeras le dossier."; return; }
+    var c = creditById(id), s = creditStats(c);
+    var other = plannedOn(id) - (editingA && editingA.creditId === id && editingA.statut !== "fait" ? (num(editingA.estime) || 0) : 0);
+    var after = s.left - other - (num($("aEstime").value) || 0);
+    h.className = "linkhint " + (after < 0 ? "bad" : "ok");
+    h.innerHTML = (aManualCredit ? "Prévu sur " : "Proposé automatiquement : ") + "<b>" + esc(creditLabel(c)) + "</b>. Engagé " + esc(eur0.format(s.used)) + ", autres achats prévus " + esc(eur0.format(other)) + ". Après cet achat : " + (after < 0 ? "dépassement de <b>" + esc(eur.format(-after)) + "</b>" : "<b>" + esc(eur.format(after)) + "</b> restants.");
+  }
+  function openAchat(a) {
+    editingA = a || null;
+    $("aTitle").textContent = a ? a.article : "Nouvel achat";
+    $("aArticle").value = a ? a.article || "" : "";
+    $("aQte").value = a && a.quantite != null ? a.quantite : "";
+    $("aEstime").value = a && a.estime != null ? a.estime : "";
+    $("aPrio").value = a ? a.priorite || "normal" : "normal";
+    $("aPour").value = a ? a.pour || "" : "";
+    $("aAnnee").value = a ? a.annee || "" : (year || CUR);
+    $("aStatut").value = a ? a.statut || "afaire" : "afaire";
+    $("aCatalogue").value = a ? a.catalogue || "" : "";
+    $("aFournisseur").value = a ? a.fournisseur || "" : "";
+    $("aService").value = a ? a.service || "" : "";
+    $("aRef").value = a ? a.reference || "" : "";
+    $("offers").innerHTML = ""; (a && a.offres || []).forEach(function (o) { offerRow(o); }); offersChanged(false);
+    $("aNotes").value = a ? a.notes || "" : "";
+    aManualCredit = !!(a && a.creditId && creditById(a.creditId));
+    fillAchatCredit(a ? a.creditId : ""); updateAchatLink();
+    $("aTrace").hidden = !a; if (a) $("aTrace").innerHTML = traceHTML(a);
+    var ro = !canWrite;
+    $("aForm").querySelectorAll("input, textarea, select").forEach(function (i) { if (i.tagName === "SELECT" || i.type === "radio") i.disabled = ro; else i.readOnly = ro; });
+    $("addOffer").hidden = ro;
+    $("aSave").hidden = ro; $("aDel").hidden = ro || !a; $("aToDossier").hidden = ro || (a && a.statut === "fait");
+    $("aConfirm").hidden = true; $("aErr").textContent = "";
+    $("aBack").hidden = false; fillNames();
+    setTimeout(function () { $("aArticle").focus(); }, 0);
+  }
+  ["aAnnee", "aCatalogue", "aEstime"].forEach(function (id) { $(id).addEventListener("input", updateAchatLink); });
+  $("aCredit").addEventListener("change", function () { aManualCredit = true; updateAchatLink(); });
+  function readAchat() {
+    return { article: $("aArticle").value.trim(), quantite: $("aQte").value === "" ? null : num($("aQte").value), estime: $("aEstime").value === "" ? null : num($("aEstime").value),
+      priorite: $("aPrio").value, pour: $("aPour").value || null, annee: $("aAnnee").value.trim(), statut: $("aStatut").value,
+      catalogue: $("aCatalogue").value.trim(), fournisseur: $("aFournisseur").value.trim(), creditId: $("aCredit").value || null, notes: $("aNotes").value.trim(),
+      service: $("aService").value.trim(), reference: $("aRef").value.trim(), offres: readOffers(),
+      dossierId: editingA ? editingA.dossierId || null : null };
+  }
+  async function saveAchat(o) {
+    if (!o.article) throw { msg: "Indique ce qu'il faut acheter." };
+    if (!/^\d{4}$/.test(o.annee)) throw { msg: "L'exercice doit être une année sur 4 chiffres." };
+    var now = Date.now();
+    o.createdAt = editingA && editingA.createdAt ? editingA.createdAt : now;
+    o.createdBy = editingA ? (editingA.createdBy || null) : meId;
+    o.updatedAt = now; o.updatedBy = meId;
+    var ref = aCol ? (editingA ? aCol.doc(editingA.id) : aCol.doc()) : null, id = ref ? ref.id : (editingA ? editingA.id : "local-a" + now);
+    if (ref) await ref.set(o); else { o.id = id; achats = achats.filter(function (a) { return a.id !== id; }).concat([o]); }
+    return id;
+  }
+  $("aForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    $("aSave").disabled = true;
+    try { var isNew = !editingA; await saveAchat(readAchat()); toast(isNew ? "Ajouté à la liste" : "Achat modifié"); $("aBack").hidden = true; editingA = null; render(); }
+    catch (err) { $("aErr").textContent = err && err.msg ? err.msg : errMsg(err); }
+    finally { $("aSave").disabled = false; }
+  });
+  $("aToDossier").addEventListener("click", async function () {
+    try {
+      var o = readAchat(), id = await saveAchat(o);
+      $("aBack").hidden = true; editingA = null;
+      startDossierFrom(Object.assign({ id: id }, o));
+    } catch (err) { $("aErr").textContent = err && err.msg ? err.msg : errMsg(err); }
+  });
+  /* Offres */
+  function offerRow(o) {
+    o = o || {};
+    var div = document.createElement("div"); div.className = "offer";
+    div.innerHTML = '<input type="radio" name="kept" aria-label="Offre retenue" title="Offre retenue"><input class="of" list="firmesList" placeholder="Fournisseur" aria-label="Fournisseur"><input class="om tn" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Montant" aria-label="Montant"><input class="od" placeholder="ex. 2 semaines" aria-label="Délai"><input class="or" placeholder="Réf. devis" aria-label="Référence du devis"><button class="btn small danger" type="button" aria-label="Retirer cette offre">×</button>';
+    div.querySelector(".of").value = o.fournisseur || "";
+    div.querySelector(".om").value = o.montant != null ? o.montant : "";
+    div.querySelector(".od").value = o.delai || "";
+    div.querySelector(".or").value = o.ref || "";
+    div.querySelector("input[type=radio]").checked = !!o.retenue;
+    div.querySelector("button").addEventListener("click", function () { div.remove(); offersChanged(true); });
+    div.addEventListener("input", function () { offersChanged(true); });
+    div.addEventListener("change", function () { offersChanged(true); });
+    $("offers").appendChild(div); return div;
+  }
+  function readOffers() {
+    return Array.prototype.map.call($("offers").children, function (r) {
+      return { fournisseur: r.querySelector(".of").value.trim(), montant: r.querySelector(".om").value === "" ? null : num(r.querySelector(".om").value), delai: r.querySelector(".od").value.trim(), ref: r.querySelector(".or").value.trim(), retenue: r.querySelector("input[type=radio]").checked };
+    }).filter(function (o) { return o.fournisseur || o.montant != null; });
+  }
+  function offersChanged(sync) {
+    var rows = Array.prototype.slice.call($("offers").children), offs = readOffers();
+    $("offerHead").hidden = !rows.length;
+    var priced = offs.filter(function (o) { return o.montant != null; });
+    var best = priced.length ? priced.reduce(function (m, o) { return o.montant < m.montant ? o : m; }) : null;
+    rows.forEach(function (r) {
+      var m = r.querySelector(".om").value === "" ? null : num(r.querySelector(".om").value);
+      r.classList.toggle("kept", r.querySelector("input[type=radio]").checked);
+      r.classList.toggle("best", priced.length > 1 && best && m === best.montant);
+    });
+    var kept = offs.find(function (o) { return o.retenue; });
+    if (sync && kept) {
+      if (kept.fournisseur) $("aFournisseur").value = kept.fournisseur;
+      if (kept.montant != null) { $("aEstime").value = kept.montant; updateAchatLink(); }
+      if ($("aStatut").value === "afaire") $("aStatut").value = "encours";
+    }
+    var t = "";
+    if (!offs.length) t = "Ajoute les prix demandés à plusieurs fournisseurs, puis coche l'offre retenue : le fournisseur et le montant estimé se remplissent tout seuls.";
+    else {
+      t = plural(offs.length, "offre") + (best ? " · la moins chère : <b>" + esc(best.fournisseur || "?") + "</b> à <b>" + esc(eur.format(best.montant)) + "</b>" : "");
+      if (priced.length > 1) { var max = priced.reduce(function (m, o) { return o.montant > m.montant ? o : m; }); t += " · écart avec la plus chère : " + esc(eur.format(max.montant - best.montant)); }
+      if (kept) t += " · retenue : <b>" + esc(kept.fournisseur || "?") + "</b>" + (best && kept.montant != null && kept.montant > best.montant ? " (plus chère de " + esc(eur.format(kept.montant - best.montant)) + ")" : "");
+      else t += " · aucune offre retenue";
+    }
+    $("offerSum").innerHTML = t;
+  }
+  function offersLine(a) {
+    var o = (a.offres || []).filter(function (x) { return x.montant != null; });
+    if (!(a.offres || []).length) return "";
+    var best = o.length ? Math.min.apply(null, o.map(function (x) { return x.montant; })) : null;
+    return plural(a.offres.length, "offre") + (best != null && a.offres.length > 1 ? " dès " + eur0.format(best) : "");
+  }
+  $("addOffer").addEventListener("click", function () { offerRow({}).querySelector(".of").focus(); offersChanged(false); });
+
+  /* Fournisseurs */
+  function allSupplierNames() {
+    return uniq(fournisseurs.map(function (f) { return (f.nom || "").trim(); })
+      .concat(dossiers.map(function (d) { return (d.firme || "").trim(); }))
+      .concat(achats.map(function (a) { return (a.fournisseur || "").trim(); }))
+      .concat([].concat.apply([], achats.map(function (a) { return (a.offres || []).map(function (o) { return (o.fournisseur || "").trim(); }); }))));
+  }
+  function supplierStats(name) {
+    var n = norm(name);
+    var ds = dossiers.filter(function (d) { return norm(d.firme) === n; });
+    var dsY = ds.filter(function (d) { return inYear(yearOf(d)); });
+    var offs = []; achats.forEach(function (a) { if (a.statut === "fait") return; (a.offres || []).forEach(function (o) { if (norm(o.fournisseur) === n) offs.push({ a: a, o: o }); }); });
+    var cats = uniq(ds.map(function (d) { return (d.catalogue || "").trim(); }));
+    return { ds: ds, dsY: dsY, total: dsY.reduce(function (s, d) { return s + amt(d); }, 0), offs: offs, cats: cats };
+  }
+  function contactHTML(f) {
+    var parts = [];
+    if (f.contact) parts.push(esc(f.contact));
+    if (f.tel) parts.push('<a href="tel:' + esc(f.tel.replace(/\s+/g, "")) + '">' + esc(f.tel) + '</a>');
+    if (f.email) parts.push('<a href="mailto:' + esc(f.email) + '">' + esc(f.email) + '</a>');
+    return parts.length ? '<span class="contact">' + parts.join('<br>') + '</span>' : '<span class="muted">—</span>';
+  }
+  function renderFournisseurs() {
+    var known = {}; fournisseurs.forEach(function (f) { known[norm(f.nom)] = f; });
+    var rows = fournisseurs.map(function (f) { return { f: f, name: f.nom, inBook: true }; });
+    allSupplierNames().forEach(function (n) { if (!known[norm(n)]) rows.push({ f: { nom: n }, name: n, inBook: false }); });
+    var show = $("fShow").value, terms = norm($("fq").value).split(/\s+/).filter(Boolean);
+    rows = rows.map(function (r) { r.st = supplierStats(r.name); return r; }).filter(function (r) {
+      if (show === "carnet" && !r.inBook) return false;
+      if (show === "hors" && r.inBook) return false;
+      var f = r.f, hay = norm([f.nom, f.contact, f.email, f.tel, f.tva, f.categories, f.adresse, f.notes].concat(r.st.cats).join(" "));
+      return terms.every(function (t) { return hay.indexOf(t) >= 0; });
+    }).sort(function (a, b) { return b.st.total - a.st.total || (a.name || "").localeCompare(b.name || "", "fr"); });
+    var hors = allSupplierNames().filter(function (n) { return !known[norm(n)]; }).length;
+    $("fSub").textContent = plural(fournisseurs.length, "fournisseur") + " dans le carnet" + (hors ? " · " + hors + " cité" + (hors > 1 ? "s" : "") + " dans tes dossiers ou offres sans fiche" : "");
+    $("fRows").innerHTML = rows.map(function (r) {
+      var f = r.f, cats = uniq([].concat((f.categories || "").split(/[,;]/).map(function (x) { return x.trim(); }), r.st.cats));
+      return '<tr class="click" tabindex="0" data-fourn="' + esc(r.inBook ? f.id : "") + '" data-fname="' + esc(r.name) + '">' +
+        '<td><b>' + esc(r.name) + '</b>' + (r.inBook ? (f.tva ? '<span class="sub">' + esc(f.tva) + '</span>' : '') : ' <span class="badge2">pas de fiche</span>') + '</td>' +
+        '<td>' + (r.inBook ? contactHTML(f) : '<span class="muted">Clique pour créer sa fiche</span>') + '</td>' +
+        '<td>' + (cats.length ? cats.slice(0, 4).map(function (c) { return '<span class="tag">' + esc(c) + '</span>'; }).join(" ") + (cats.length > 4 ? ' <span class="muted">+' + (cats.length - 4) + '</span>' : '') : '<span class="muted">—</span>') + '</td>' +
+        '<td class="money">' + r.st.dsY.length + (r.st.ds.length !== r.st.dsY.length ? '<span class="sub">' + r.st.ds.length + ' au total</span>' : '') + '</td>' +
+        '<td class="money">' + (r.st.total ? esc(eur.format(r.st.total)) : '<span class="muted">—</span>') + '</td>' +
+        '<td class="money">' + (r.st.offs.length || '<span class="muted">—</span>') + '</td></tr>';
+    }).join("");
+    $("fEmpty").hidden = rows.length > 0;
+    $("fEmpty").textContent = !allSupplierNames().length ? "Aucun fournisseur pour l'instant. Clique sur « + Nouveau fournisseur »." : "Aucun fournisseur ne correspond.";
+  }
+  function openFourn(f, presetName) {
+    editingF = f || null;
+    $("fTitle").textContent = f ? f.nom : "Nouveau fournisseur";
+    $("fNom").value = f ? f.nom || "" : (presetName || "");
+    $("fContact").value = f ? f.contact || "" : ""; $("fTel").value = f ? f.tel || "" : ""; $("fMail").value = f ? f.email || "" : "";
+    $("fWeb").value = f ? f.web || "" : ""; $("fAdr").value = f ? f.adresse || "" : ""; $("fTva").value = f ? f.tva || "" : "";
+    $("fCats").value = f ? f.categories || "" : ""; $("fNotes").value = f ? f.notes || "" : "";
+    var name = f ? f.nom : presetName, st = name ? supplierStats(name) : null;
+    if (st && (st.ds.length || st.offs.length)) {
+      var tot = st.ds.reduce(function (s, d) { return s + amt(d); }, 0);
+      $("fHist").innerHTML = '<div class="section-t" style="margin-bottom:8px">Historique · ' + plural(st.ds.length, "dossier") + ' · ' + esc(eur.format(tot)) + ' commandés</div>' +
+        (st.ds.length ? '<div class="mini-list"><table><thead><tr><th>N°</th><th>Date</th><th>Objet</th><th class="money">Montant</th></tr></thead><tbody>' +
+          st.ds.slice().sort(function (a, b) { return (b.date || "").localeCompare(a.date || ""); }).slice(0, 12).map(function (d) { return '<tr><td class="num">' + esc(d.numero) + '</td><td class="date">' + esc(fmtDate(d.date)) + '</td><td>' + esc(d.objet || d.catalogue || "—") + '</td><td class="money">' + esc(eur.format(amt(d))) + '</td></tr>'; }).join("") + '</tbody></table></div>' : '') +
+        (st.offs.length ? '<div class="section-t" style="margin:14px 0 8px">Offres en cours</div><div class="mini-list"><table><tbody>' + st.offs.map(function (x) { return '<tr><td>' + esc(x.a.article) + (x.o.retenue ? ' <span class="tag">retenue</span>' : '') + '</td><td>' + esc(x.o.delai || "") + '</td><td class="money">' + (x.o.montant != null ? esc(eur.format(x.o.montant)) : "—") + '</td></tr>'; }).join("") + '</tbody></table></div>' : '');
+    } else $("fHist").innerHTML = "";
+    $("fTrace").hidden = !f; if (f) $("fTrace").innerHTML = traceHTML(f);
+    var ro = !canWrite;
+    $("fForm").querySelectorAll("input, textarea").forEach(function (i) { i.readOnly = ro; });
+    $("fSave").hidden = ro; $("fDel").hidden = ro || !f;
+    $("fConfirm").hidden = true; $("fErr").textContent = "";
+    $("fBack").hidden = false; fillNames();
+    setTimeout(function () { (f || presetName ? $("fContact") : $("fNom")).focus(); }, 0);
+  }
+  $("fForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    var o = { nom: $("fNom").value.trim(), contact: $("fContact").value.trim(), tel: $("fTel").value.trim(), email: $("fMail").value.trim(), web: $("fWeb").value.trim(), adresse: $("fAdr").value.trim(), tva: $("fTva").value.trim(), categories: $("fCats").value.trim(), notes: $("fNotes").value.trim() };
+    if (!o.nom) { $("fErr").textContent = "Le nom de la firme est obligatoire."; return; }
+    if (fournisseurs.some(function (f) { return (!editingF || f.id !== editingF.id) && norm(f.nom) === norm(o.nom); })) { $("fErr").textContent = "Ce fournisseur est déjà dans le carnet."; return; }
+    var now = Date.now();
+    o.createdAt = editingF && editingF.createdAt ? editingF.createdAt : now; o.createdBy = editingF ? (editingF.createdBy || null) : meId; o.updatedAt = now; o.updatedBy = meId;
+    $("fSave").disabled = true;
+    try {
+      var ref = fCol ? (editingF ? fCol.doc(editingF.id) : fCol.doc()) : null;
+      if (ref) await ref.set(o); else { o.id = editingF ? editingF.id : "local-f" + now; fournisseurs = fournisseurs.filter(function (f) { return f.id !== o.id; }).concat([o]); }
+      toast(editingF ? "Fournisseur modifié" : "Fournisseur ajouté au carnet"); $("fBack").hidden = true; editingF = null; render();
+    } catch (err) { $("fErr").textContent = errMsg(err); }
+    finally { $("fSave").disabled = false; }
+  });
+  $("fDel").addEventListener("click", function () { $("fConfirm").hidden = false; $("fConfirmDel").focus(); });
+  $("fConfirmDel").addEventListener("click", async function () {
+    try { if (fCol) await fCol.doc(editingF.id).delete(); else fournisseurs = fournisseurs.filter(function (f) { return f.id !== editingF.id; }); toast("Fournisseur retiré du carnet"); $("fBack").hidden = true; editingF = null; render(); }
+    catch (err) { $("fErr").textContent = errMsg(err); }
+  });
+  function fRowOpen(e) {
+    if (e.type === "keydown" && e.key !== "Enter") return;
+    if (e.target.closest("a")) return;
+    var tr = e.target.closest("tr[data-fname]"); if (!tr) return;
+    if (tr.dataset.fourn) { var f = fournisseurs.find(function (x) { return x.id === tr.dataset.fourn; }); if (f) openFourn(f); }
+    else if (canWrite) openFourn(null, tr.dataset.fname);
+  }
+  $("fRows").addEventListener("click", fRowOpen);
+  $("fRows").addEventListener("keydown", fRowOpen);
+  $("newFournBtn").addEventListener("click", function () { openFourn(null); });
+  $("fq").addEventListener("input", render);
+  $("fShow").addEventListener("change", render);
+
+  function startDossierFrom(a) {
+    var q = num(a.quantite);
+    var kept = (a.offres || []).find(function (o) { return o.retenue; });
+    openDossier(null, { achatId: a.id, firme: a.fournisseur, catalogue: a.catalogue, montant: num(a.estime), creditId: a.creditId, objet: (q ? q + " × " : "") + a.article, notes: a.notes,
+      extras: [a.service ? { label: "Service demandeur", value: a.service } : null, kept && kept.ref ? { label: "Réf. devis", value: kept.ref } : null, kept && kept.delai ? { label: "Délai", value: kept.delai } : null, a.reference ? { label: "Réf. produit", value: a.reference } : null].filter(Boolean) });
+  }
+  $("aDel").addEventListener("click", function () { $("aConfirm").hidden = false; $("aConfirmDel").focus(); });
+  $("aConfirmDel").addEventListener("click", async function () {
+    try { if (aCol) await aCol.doc(editingA.id).delete(); else achats = achats.filter(function (a) { return a.id !== editingA.id; }); toast("Achat supprimé"); $("aBack").hidden = true; editingA = null; render(); }
+    catch (err) { $("aErr").textContent = errMsg(err); }
+  });
+  $("aRows").addEventListener("click", async function (e) {
+    var t = e.target.closest("[data-tick]"), td = e.target.closest("[data-todossier]");
+    if (t) {
+      e.stopPropagation();
+      var a = achats.find(function (x) { return x.id === t.dataset.tick; }); if (!a || !canWrite) return;
+      var st = a.statut === "fait" ? "afaire" : "fait";
+      try { if (aCol) await aCol.doc(a.id).update({ statut: st, updatedAt: Date.now(), updatedBy: meId }); else { a.statut = st; render(); } toast(st === "fait" ? "Achat marqué comme fait" : "Remis dans la liste"); }
+      catch (err) { toast(errMsg(err)); }
+      return;
+    }
+    if (td) { e.stopPropagation(); var a2 = achats.find(function (x) { return x.id === td.dataset.todossier; }); if (a2) startDossierFrom(a2); return; }
+    var tr = e.target.closest("tr[data-achat]"); if (tr) { var a3 = achats.find(function (x) { return x.id === tr.dataset.achat; }); if (a3) openAchat(a3); }
+  });
+  $("aRows").addEventListener("keydown", function (e) { if (e.key !== "Enter" || e.target.closest("button")) return; var tr = e.target.closest("tr[data-achat]"); if (tr) { var a = achats.find(function (x) { return x.id === tr.dataset.achat; }); if (a) openAchat(a); } });
+  $("aSegs").addEventListener("click", function (e) { var b = e.target.closest("[data-st]"); if (b) { aFilter = b.dataset.st; render(); } });
+  $("aq").addEventListener("input", render);
+  $("afCat").addEventListener("change", render);
+  $("afPrio").addEventListener("change", render);
+  $("newAchatBtn").addEventListener("click", function () { openAchat(null); });
+  $("newAchatBtn2").addEventListener("click", function () { openAchat(null); });
+
   /* ---------- Fermeture des panneaux ---------- */
-  document.querySelectorAll("[data-close]").forEach(function (b) { b.addEventListener("click", function () { b.closest(".backdrop").hidden = true; editingD = editingC = null; }); });
+  document.querySelectorAll("[data-close]").forEach(function (b) { b.addEventListener("click", function () { b.closest(".backdrop").hidden = true; editingD = editingC = editingA = editingF = null; }); });
   document.querySelectorAll("[data-cancel-del]").forEach(function (b) { b.addEventListener("click", function () { b.closest(".confirm").hidden = true; }); });
-  document.querySelectorAll(".backdrop").forEach(function (bd) { bd.addEventListener("click", function (e) { if (e.target === bd) { bd.hidden = true; editingD = editingC = null; } }); });
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape") document.querySelectorAll(".backdrop").forEach(function (bd) { if (!bd.hidden) { bd.hidden = true; editingD = editingC = null; } }); });
+  document.querySelectorAll(".backdrop").forEach(function (bd) { bd.addEventListener("click", function (e) { if (e.target === bd) { bd.hidden = true; editingD = editingC = editingA = editingF = null; } }); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") document.querySelectorAll(".backdrop").forEach(function (bd) { if (!bd.hidden) { bd.hidden = true; editingD = editingC = editingA = editingF = null; } }); });
 
   /* ---------- Écouteurs ---------- */
   $("year").addEventListener("change", function () { year = $("year").value; try { localStorage.setItem("mp-year", year); } catch (e) {} render(); });
@@ -1054,21 +1561,24 @@ tfoot td { font-weight: 700; border-top: 1px solid var(--line); border-bottom: 0
   var sb = null;
   var MAP = {
     dossiers: { table: "mp_dossiers", f: { numero: "numero", date: "date", firme: "firme", catalogue: "catalogue", montant: "montant", creditId: "credit_id", objet: "objet", notes: "notes", extras: "extras" } },
-    credits: { table: "mp_credits", f: { libelle: "libelle", annee: "annee", montant: "montant", reference: "reference", catalogue: "catalogue", notes: "notes" } }
+    credits: { table: "mp_credits", f: { libelle: "libelle", annee: "annee", montant: "montant", reference: "reference", catalogue: "catalogue", notes: "notes" } },
+    achats: { table: "mp_achats", f: { article: "article", quantite: "quantite", estime: "estime", priorite: "priorite", pour: "pour", annee: "annee", statut: "statut", catalogue: "catalogue", fournisseur: "fournisseur", creditId: "credit_id", dossierId: "dossier_id", notes: "notes", service: "service", reference: "reference", offres: "offres" } },
+    fournisseurs: { table: "mp_fournisseurs", f: { nom: "nom", contact: "contact", tel: "tel", email: "email", web: "web", adresse: "adresse", tva: "tva", categories: "categories", notes: "notes" } }
   };
   function toRow(kind, o) { var r = {}, f = MAP[kind].f; Object.keys(f).forEach(function (k) { if (k in o) r[f[k]] = o[k] === undefined ? null : o[k]; }); return r; }
   function fromRow(kind, r) {
     var o = { id: r.id }, f = MAP[kind].f;
     Object.keys(f).forEach(function (k) { o[k] = r[f[k]]; });
-    o.montant = r.montant == null ? null : Number(r.montant);
-    if (kind === "dossiers") { o.date = r.date || ""; o.extras = Array.isArray(r.extras) ? r.extras : []; o.creditId = r.credit_id || null; }
-    else o.annee = String(r.annee);
+    if (kind === "dossiers") { o.montant = r.montant == null ? null : Number(r.montant); o.date = r.date || ""; o.extras = Array.isArray(r.extras) ? r.extras : []; o.creditId = r.credit_id || null; }
+    else if (kind === "credits") { o.montant = r.montant == null ? null : Number(r.montant); o.annee = String(r.annee); }
+    else if (kind === "fournisseurs") { /* champs texte */ }
+    else { o.offres = Array.isArray(r.offres) ? r.offres : []; o.estime = r.estime == null ? null : Number(r.estime); o.quantite = r.quantite == null ? null : Number(r.quantite); o.pour = r.pour || ""; o.annee = String(r.annee); o.creditId = r.credit_id || null; o.dossierId = r.dossier_id || null; }
     o.createdAt = r.created_at ? Date.parse(r.created_at) : null; o.createdBy = r.created_by || null;
     o.updatedAt = r.updated_at ? Date.parse(r.updated_at) : null; o.updatedBy = r.updated_by || null;
     return o;
   }
   function uuid() { return (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) { var r = Math.random() * 16 | 0; return (c === "x" ? r : (r & 3 | 8)).toString(16); }); }
-  // Même interface que la version précédente : col.doc(id).set / update / delete
+  // Même interface que la version Claude : col.doc(id).set / update / delete
   function makeCol(kind) {
     var t = MAP[kind].table;
     return { doc: function (id) {
@@ -1087,14 +1597,17 @@ tfoot td { font-weight: 700; border-top: 1px solid var(--line); border-bottom: 0
     loading = (async function () {
       var res = await Promise.all([
         sb.from("mp_credits").select("*"), sb.from("mp_dossiers").select("*"),
-        sb.from("mp_exercices").select("annee"), sb.from("mp_profils").select("id, nom")
+        sb.from("mp_exercices").select("annee"), sb.from("mp_profils").select("id, nom"),
+        sb.from("mp_achats").select("*"), sb.from("mp_fournisseurs").select("*")
       ]);
       var bad = res.find(function (r) { return r.error; });
-      if (bad) { setStatus("Impossible de charger les données : " + bad.error.message, "err"); return; }
+      if (bad) { setStatus("Impossible de charger les données : " + bad.error.message + (/mp_achats|mp_fournisseurs|offres|service|reference/.test(bad.error.message) ? " (exécute mise-a-jour.sql dans Supabase)" : ""), "err"); return; }
       credits = res[0].data.map(function (r) { return fromRow("credits", r); });
       dossiers = res[1].data.map(function (r) { return fromRow("dossiers", r); });
       extraYears = res[2].data.map(function (r) { return String(r.annee); });
       profils = {}; res[3].data.forEach(function (p) { profils[p.id] = p; });
+      achats = res[4].data.map(function (r) { return fromRow("achats", r); });
+      fournisseurs = res[5].data.map(function (r) { return fromRow("fournisseurs", r); });
       setStatus("");
       render();
     })();
@@ -1154,7 +1667,6 @@ tfoot td { font-weight: 700; border-top: 1px solid var(--line); border-bottom: 0
     if (!user || started) return;
     started = true;
     meId = user.id;
-    // Profil : création au premier passage, avec le nom donné à l'inscription
     var p = await sb.from("mp_profils").select("*").eq("id", meId).maybeSingle();
     var prof = p.data;
     if (!prof) {
@@ -1174,7 +1686,7 @@ tfoot td { font-weight: 700; border-top: 1px solid var(--line); border-bottom: 0
       render(); return;
     }
     canWrite = true;
-    dCol = makeCol("dossiers"); cCol = makeCol("credits");
+    dCol = makeCol("dossiers"); cCol = makeCol("credits"); aCol = makeCol("achats"); fCol = makeCol("fournisseurs");
     $("auth").hidden = true;
     setStatus("Chargement…");
     await reload();
@@ -1182,6 +1694,8 @@ tfoot td { font-weight: 700; border-top: 1px solid var(--line); border-bottom: 0
       .on("postgres_changes", { event: "*", schema: "public", table: "mp_dossiers" }, scheduleReload)
       .on("postgres_changes", { event: "*", schema: "public", table: "mp_credits" }, scheduleReload)
       .on("postgres_changes", { event: "*", schema: "public", table: "mp_exercices" }, scheduleReload)
+      .on("postgres_changes", { event: "*", schema: "public", table: "mp_achats" }, scheduleReload)
+      .on("postgres_changes", { event: "*", schema: "public", table: "mp_fournisseurs" }, scheduleReload)
       .subscribe();
     window.addEventListener("focus", scheduleReload);
   }
