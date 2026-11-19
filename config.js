@@ -3,6 +3,6 @@
 // La clé « anon » est faite pour être publique : la sécurité vient des règles de supabase.sql.
 // Ne mets JAMAIS ici la clé « service_role ».
 window.MP_CONFIG = {
-  supabaseUrl: "https://VOTRE-PROJET.supabase.co",
-  supabaseAnonKey: "VOTRE_CLE_ANON_PUBLIQUE"
+  supabaseUrl: "https://alzdatnnpetwkeemajuw.supabase.co",
+  supabaseAnonKey: "sb_publishable_YR8KFypdYroeXKokf7XXUw_lICfZ00B"
 };
